@@ -1,11 +1,3 @@
-#TO RUN THIS GAME, PLEASE ENTER THE FOLLOEING COMMAND:
-"""python -W ignore .\Terminalcraft.py"""
-#TO RUN THIS GAME, PLEASE ENTER THE FOLLOEING COMMAND:
-"""python -W ignore .\Terminalcraft.py"""
-
-
-
-
 import datetime
 import random
 import sys
@@ -34,7 +26,7 @@ freelancers = {
     'black knight': 200,
     'biccus diccus': 1000,
     'grim reaper': 5000,
-    'minstrel': 000
+    'minstrel': 000,
     'god': 1000000,
     'nordic': 2000,
     'mage': 5000,
@@ -620,12 +612,7 @@ while not game_ended:
             
             if game_ended:
                 break
-            
-            # Advance time after each shop visit -        advance_time .
-            times = ["morning", "afternoon", "evening", "night"]
-            current_index = times.index(time_of_day)
-            time_of_day = times[(current_index + 1) % len(times)]
-            
+
             # Randomly change weather
             if random.random() < 0.3:
                 weather = random.choice(["clear", "cloudy", "rainy", "foggy"])
