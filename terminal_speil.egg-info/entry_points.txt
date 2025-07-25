@@ -1,0 +1,2 @@
+[console_scripts]
+terminal-speil = terminal_speil:main
