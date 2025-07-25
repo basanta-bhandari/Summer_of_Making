@@ -1,8 +1,21 @@
+# PLEASE ENTER 
+'python -W Terminalcraft.py'
+'cls'
+# TO RUN THE FILE,
+# THANKS, BASANTA
+
+# PLEASE ENTER 
+'python -W Terminalcraft.py'
+'cls'
+# TO RUN THE FILE,
+# THANKS, BASANTA
+
+# IMPORTS
 import datetime
 import random
 import sys
 
-# Game Data
+# DICTIONARIES
 grocery = {
     'bread': 10,
     'cheese': 15,
@@ -26,11 +39,12 @@ freelancers = {
     'black knight': 200,
     'biccus diccus': 1000,
     'grim reaper': 5000,
-    'minstrel': 000,
-    'god': 1000000,
+    'minstrel': 0,
+    'god': 'dedication and hope',
     'nordic': 2000,
     'mage': 5000,
     'ze germane': 1000,
+    'dragonore': 'coolness'
 }
 
 antiques = {
@@ -57,16 +71,34 @@ pet_shop = {
 }
 
 village_quests = {
-    'hunt wild boar': {'reward': 150, 'description': 'A wild boar terrorizes the fields!'},
-    'deliver message to next village': {'reward': 80, 'description': 'Urgent message needs delivery!'},
-    'find lost sheep': {'reward': 60, 'description': 'Farmer Johann lost his prize sheep!'},
-    'escort merchant caravan': {'reward': 200, 'description': 'Dangerous roads need protection!'},
-    'gather rare herbs': {'reward': 120, 'description': 'Village healer needs mystical herbs!'},
-    'repair village well': {'reward': 100, 'description': 'Well broken, villagers thirsty!'},
-    'catch pickpocket': {'reward': 180, 'description': 'Thief stealing from market stalls!'},
-    'explore haunted ruins': {'reward': 300, 'description': 'Ancient ruins hold treasure... and danger!'},
-    'tame wild horse': {'reward': 250, 'description': 'Magnificent stallion roams the plains!'},
-    'brew healing elixir': {'reward': 140, 'description': 'Village plagued by mysterious illness!'}
+    'hunt wild boar': 
+    {'reward': 150, 
+    'description': 'A wild boar terrorizes the fields!'},
+    'deliver message to next village': 
+    {'reward': 80, 'description': 'Urgent message needs delivery!'},
+    'find lost sheep': 
+    {'reward': 60, 'description': 'Farmer Johann lost his prize sheep!'},
+    'escort merchant caravan': 
+    {'reward': 200, 
+    'description': 'Dangerous roads need protection!'},
+    'gather rare herbs': 
+    {'reward': 120, 
+    'description': 'Village healer needs mystical herbs!'},
+    'repair village well': 
+    {'reward': 100, 
+    'description': 'Well broken, villagers thirsty!'},
+    'catch pickpocket': 
+    {'reward': 180, 
+    'description': 'Thief stealing from market stalls!'},
+    'explore haunted ruins': 
+    {'reward': 300, 
+    'description': 'Ancient ruins hold treasure... and danger!'},
+    'tame wild horse': 
+    {'reward': 250, 
+    'description': 'Magnificent stallion roams the plains!'},
+    'brew healing elixir': 
+    {'reward': 140, 
+    'description': 'Village plagued by mysterious illness!'}
 }
 
 blacksmith_jobs = {
@@ -77,11 +109,22 @@ blacksmith_jobs = {
 }
 
 tavern_activities = {
-    'arm wrestling contest': {'reward': 75, 'description': 'Test your strength against locals!'},
-    'storytelling night': {'reward': 50, 'description': 'Entertain patrons with epic tales!'},
-    'drinking contest': {'reward': 40, 'description': 'Last one standing wins the pot!'},
-    'solve riddle challenge': {'reward': 85, 'description': 'Old sage poses mysterious riddles!'},
-    'bard performance': {'reward': 65, 'description': 'Play music for coin and glory!'}
+    'arm wrestling contest': 
+    {'reward': 75,
+     'description': 'Test your strength against locals!'
+    },
+    'storytelling night': 
+    {'reward': 50,
+    'description': 'Entertain patrons with epic tales!'},
+    'drinking contest': 
+    {'reward': 40, 
+    'description': 'Last one standing wins the pot!'},
+    'solve riddle challenge':
+     {'reward': 85,
+    'description': 'Old sage poses mysterious riddles!'},
+    'bard performance': 
+    {'reward': 65, 
+    'description': 'Play music for coin and glory!'}
 }
 
 random_events = [
@@ -94,7 +137,7 @@ random_events = [
     {'event': 'A noble appreciates your service to the village!', 'gold': 120}
 ]
 
-# Game State
+# GLOBAL VARIABLES/DEFINES
 completed_quests = []
 time_of_day = "morning"
 weather = "clear"
@@ -102,6 +145,7 @@ gold = 10000
 cart = ["healing potion"]
 game_ended = False
 
+# MAIN CODE
 # START MAIN GAME LOGIC
 print("=== MEDIEVAL VILLAGE DEFENSE ===")
 print("Welcome, brave hero!")
@@ -118,6 +162,10 @@ while True:
 # Get player name
 player_name = input("Enter character name: ")
 
+# Show current time
+current_hour = datetime.datetime.now().hour
+current_time = datetime.datetime.now()
+print(f"Adventure begins at: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 # Show intro - show_intro .
 print(f"""
@@ -135,6 +183,15 @@ Ze germanz are approaching... time is running out!
 # Main game loop
 while not game_ended:
     # Show atmosphere -  show_atmosphere .
+    # Set time_of_day based on real time
+    if current_hour < 6:
+        time_of_day = "night"
+    elif current_hour < 12:
+        time_of_day = "morning" 
+    elif current_hour < 18:
+        time_of_day = "afternoon"
+    else:
+        time_of_day = "evening"
     if time_of_day == "morning":
         print("\nThe morning sun casts long shadows across the cobblestones. Birds chirp in the distance.")
     elif time_of_day == "afternoon":
@@ -145,7 +202,6 @@ while not game_ended:
         print("\nThe night is quiet except for distant tavern laughter. Stars twinkle overhead.")
     
     # Weather description - g get_weather_description .
-    import random
     if weather == "clear":
         print("The sky is clear and bright.")
     elif weather == "cloudy":
@@ -160,12 +216,11 @@ while not game_ended:
     print("i. Check Inventory")
     print("s. Visit Shops")
     print("b. Battle Germanic Tribes")
-    print("q. Quit Game")
-    print()
+    print("q. Quit Game\n")
     
     # Get main menu choice - get_menu_choice .
     while True:
-        main_choice = input("Choose an option: ").strip().lower().replace(' ', '')
+        main_choice = input("Choose an option: ").lower()
         if main_choice in ['i', 's', 'b', 'q', 'back', '//']:
             break
     
@@ -232,7 +287,7 @@ while not game_ended:
                 # Get freelancer choice
                 freelancer_options = list(freelancers.keys()) + ['exit']
                 while True:
-                    freelancer_choice = input("Select a freelancer or 'exit': ").strip().lower().replace(' ', '')
+                    freelancer_choice = input("Select a freelancer or 'exit': ").lower()
                     if freelancer_choice in freelancer_options:
                         break
                 
@@ -240,7 +295,7 @@ while not game_ended:
                     # Process freelancer choice - process_freelancer_choice .
                     price = freelancers[freelancer_choice]
                     
-                    if freelancer_choice == 'minstrel' or freelancer_choice == 'minstrel2':
+                    if freelancer_choice == 'minstrel':
                         print(f"You hired the minstrel... but he killed and looted you!")
                         print("YOU DIED! Thanks for playing.")
                         game_ended = True
@@ -257,7 +312,7 @@ while not game_ended:
                     else:
                         gold -= price
                         cart.append(freelancer_choice)
-                        freelancers.pop(freelancer_choice)  # Remove from shop
+                       
                         
                         while True:
                             battle_choice = input("Ready for battle? (yes/no/inventory): ").strip().lower().replace(' ', '')
@@ -279,14 +334,12 @@ while not game_ended:
                                 print("YOU WON! Thanks for playing!")
                                 game_ended = True
                                 break
-                                sys.exit()
                             elif freelancer_choice == 'black knight':
                                 print("The Black Knight dies heroically in battle, winning it!")
                                 print("You revive him with your healing potion.")
                                 print("YOU WON! Thanks for playing!")
                                 game_ended = True
                                 break
-                                sys.exit()
                             elif freelancer_choice == 'grim reaper':
                                 print("The Grim Reaper uses 'GRIM EYES' ability...")
                                 print("""
@@ -300,10 +353,10 @@ while not game_ended:
                              """)
                                 print("REAPING...............")
                                 print("You defeated ze germanz and became village king!")
+                                print("With literal death by your side you are crowned!")
                                 print("YOU WON! Thanks for playing!")
                                 game_ended = True
                                 break
-                                sys.exit()
                             elif freelancer_choice == 'god':
                                 print("GOD APPRECIATES JUSTICE!")
                                 print("GOD used 'BRIGHT EYE' ability!")
@@ -317,17 +370,47 @@ while not game_ended:
     "-._   \ / !   ! \ /  _.-"  
        "=~~.._  _..~~=`"        """)
                                 print("You received the blessing of god!")
+                                print("You, the son of god have started Terminality with your followers!")
                                 print("YOU WON! Thanks for playing!")
                                 game_ended = True
                                 break
-                                sys.exit()
+                            elif  freelancer_choice == 'mage':
+                                print("""Your mage fights variantly,
+                                MAGE USES STAFF OF UROPE,
+                                  ____
+                                 /----\.    
+                                ===(O)[=====\--\=====l
+                                 \----/.
+                                
+                                """)
+                            elif freelancer_choice == 'dragonore':
+                                print("""Bro, ya dat cool? damnn!
+                                DRAGONORE SUMMONS HIS MYTHICAL CREATURES,
+<>=======() 
+(/\___   /|\\          ()==========<>_
+      \_/ | \\        //|\   ______/ \)
+        \_|  \\      // | \_/
+          \|\/|\_   //  /\/
+           (.\/.)\ \_//  /
+          //_/\_\/ /  |
+         @@//-|=\  \  |
+                \_=\_ \ |
+                \==\ \|\_ 
+             __(\===\(  )\l
+            (((~) __(_/   |
+                 (((~) \  /
+                 ______/ /
+                 '------'
+                 Yo enemies are ash bro,
+                                """)
+                                print("You defeated ze germanz!")
+                                print("YOU WON! Thanks for playing!")
                             else:
                                 print(f"{freelancer_choice.title()} fights valiantly!")
                                 print("You defeated ze germanz!")
                                 print("YOU WON! Thanks for playing!")
                                 game_ended = True
                                 break
-                                sys.exit()
             
             elif shop_choice == '2':
                 # ANTIQUES SHOP - visit_generic_shop .
@@ -357,11 +440,11 @@ while not game_ended:
                             cart.append(antique_choice)
                             antiques.pop(antique_choice)
                             print(f"You bought {antique_choice} for {price} gold!")
-                        
-                        elif price==1000000:
+                        elif price < 0:
+                            gold += abs(price)
                             cart.append(antique_choice)
                             antiques.pop(antique_choice)
-                            print(f"You bought {antique_choice} for {price} gold!")
+                            print(f"You took {antique_choice} and gained {abs(price)} gold!")
                         else:
                             print("Not enough gold!")
             

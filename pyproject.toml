@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Terminal Speil"
 version = "1.0.0"
 description = "This is my game that I submitted for Terminalcraft, Summer of Making 2025. Its a simple python game about a guy trying to save his European village from a German tribe. The idea was inspired by 'project' that i did a few months back."  # Replace with your project description
-authors = [{name = "Basanta Bhandari", email = "bhandari.basanta.47@gmail.com"}]  # Replace with your info
+authors = [{name = "Basanta Bhandari", email = "bhandari.basanta.47@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = []
