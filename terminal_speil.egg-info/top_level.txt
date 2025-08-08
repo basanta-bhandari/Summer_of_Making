@@ -1,1 +1,1 @@
-dist
+Terminal_Speil_Main

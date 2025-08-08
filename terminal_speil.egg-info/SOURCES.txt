@@ -1,4 +1,5 @@
 README.md
+Terminal_Speil_Main.py
 pyproject.toml
 terminal_speil.egg-info/PKG-INFO
 terminal_speil.egg-info/SOURCES.txt

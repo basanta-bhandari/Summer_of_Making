@@ -1,147 +1,444 @@
-
-# # PLEASE ENTER 
-'cls'
-'python -W ignore Terminalcraft.py'
-
-# TO RUN THE FILE,
-# THANKS, BASANTA
-
 # PLEASE ENTER 
-'cls'
-'python -W ignore Terminalcraft.py'
+# 'cls'
+# 'python -W ignore Terminal_Speil_Main.py'
 
 # TO RUN THE FILE,
 # THANKS, BASANTA
 
-# IMPORTS
-import datetime
+import json
 import random
+import datetime
+import os
 import sys
+from utils import *
+from game_data import *
+
+def handle_shop_selection(gold, cart, completed_quests, player_name):
+    """Handle shop selection and purchases"""
+    result = {
+        'gold': gold,
+        'cart': cart.copy(),
+        'completed_quests': completed_quests.copy(),
+        'game_ended': False
+    }
+    
+    # Make copies of shop inventories so we can modify them
+    shops = {
+        'freelancers': FREELANCERS.copy(),
+        'antiques': ANTIQUES.copy(),
+        'pet_shop': PET_SHOP.copy(),
+        'grocery': GROCERY.copy(),
+        'botanical_nursery': BOTANICAL_NURSERY.copy(),
+        'farmers_market': FARMERS_MARKET.copy()
+    }
+    
+    shop_loop = True
+    while shop_loop and not result['game_ended']:
+        print(f"\n=== VILLAGE SHOPS ===")
+        print("1. Freelancers")
+        print("2. Antiques")
+        print("3. Pet Shop")
+        print("4. Grocery")
+        print("5. Botanical Nursery")
+        print("6. Farmers Market")
+        print("7. Quest Board")
+        print("back. Return to Main Menu")
+        
+        shop_choice = get_valid_input("Which shop? (1-7 or 'back'): ", ['1', '2', '3', '4', '5', '6', '7', 'back'])
+        
+        if shop_choice == 'back':
+            shop_loop = False
+            continue
+            
+        elif shop_choice == '1':
+            # FREELANCERS SHOP
+            freelancer_result = handle_freelancers_guild(result['gold'], result['cart'], shops['freelancers'], player_name)
+            result.update(freelancer_result)
+            if result['game_ended']:
+                break
+                
+        elif shop_choice == '2':
+            # ANTIQUE SHOP
+            shop_result = handle_generic_shop(
+                result['gold'], result['cart'], shops['antiques'], 
+                "ANTIQUE SHOP", 
+                "Dust motes dance in the filtered sunlight. Ancient treasures gleam mysteriously."
+            )
+            result['gold'] = shop_result['gold']
+            result['cart'] = shop_result['cart']
+            
+        elif shop_choice == '3':
+            # PET SHOP
+            shop_result = handle_generic_shop(
+                result['gold'], result['cart'], shops['pet_shop'],
+                "PET SHOP",
+                "The air fills with chirping, squeaking, and the rustle of small creatures."
+            )
+            result['gold'] = shop_result['gold']
+            result['cart'] = shop_result['cart']
+            
+        elif shop_choice == '4':
+            # GROCERY STORE
+            shop_result = handle_generic_shop(
+                result['gold'], result['cart'], shops['grocery'],
+                "GROCERY",
+                "The aroma of fresh bread and pungent cheese and aged wine fills your nostrils."
+            )
+            result['gold'] = shop_result['gold']
+            result['cart'] = shop_result['cart']
+            
+        elif shop_choice == '5':
+            # BOTANICAL NURSERY
+            shop_result = handle_generic_shop(
+                result['gold'], result['cart'], shops['botanical_nursery'],
+                "BOTANICAL NURSERY",
+                "Sweet floral scents and rich earth surround you."
+            )
+            result['gold'] = shop_result['gold']
+            result['cart'] = shop_result['cart']
+            
+        elif shop_choice == '6':
+            # FARMERS MARKET
+            shop_result = handle_generic_shop(
+                result['gold'], result['cart'], shops['farmers_market'],
+                "FARMERS MARKET", 
+                "Fresh produce is arranged in colorful displays."
+            )
+            result['gold'] = shop_result['gold']
+            result['cart'] = shop_result['cart']
+            
+        elif shop_choice == '7':
+            # QUEST BOARD
+            quest_result = handle_quest_board(result['gold'], result['completed_quests'])
+            result['gold'] = quest_result['gold']
+            result['completed_quests'] = quest_result['completed_quests']
+    
+    return result
+
+def handle_freelancers_guild(gold, cart, freelancers_shop, player_name):
+    """Handle the freelancers guild with special battle mechanics"""
+    result = {
+        'gold': gold,
+        'cart': cart.copy(),
+        'game_ended': False
+    }
+    
+    print("\n--- Entering Freelancers ---")
+    print("\n=== FREELANCERS GUILD ===")
+    print("The guild hall echoes with the sounds of sharpening weapons and hushed conversations.")
+    
+    if not freelancers_shop:
+        print("The guild is empty! All freelancers are out on missions.")
+        input("Press Enter to continue...")
+        return result
+    
+    print("\nAvailable Freelancers:")
+    for name, price in freelancers_shop.items():
+        if price == 'dedication and hope':
+            print(f"- {name.title()}: Requires dedication and hope")
+        else:
+            print(f"- {name.title()}: {price} gold")
+    
+    freelancer_options = list(freelancers_shop.keys()) + ['exit']
+    freelancer_choice = get_valid_input("Select a freelancer or 'exit': ", freelancer_options)
+    
+    if freelancer_choice == 'exit':
+        return result
+    
+    # Process freelancer choice
+    price = freelancers_shop[freelancer_choice]
+    
+    # Handle special cases
+    if freelancer_choice == 'minstrel':
+        print(f"You hired the minstrel... but he killed and looted you!")
+        print("YOU DIED! Thanks for playing.")
+        result['game_ended'] = True
+        return result
+        
+    elif freelancer_choice == 'ze germane':
+        print(f"You hired ze germane... but he betrayed you immediately!")
+        print("YOU DIED! Thanks for playing.")
+        result['game_ended'] = True
+        return result
+        
+    elif freelancer_choice == 'god':
+        dedication_choice = get_valid_input("Do you have true dedication and hope in your heart? (yes/no): ", ['yes', 'no'])
+        if dedication_choice == 'no':
+            print("God sees through your lack of faith...")
+            input("Press Enter to continue...")
+            return result
+        else:
+            print("God recognizes your pure heart!")
+            result['cart'].append(freelancer_choice)
+            freelancers_shop.pop(freelancer_choice)
+    
+    else:
+        # Normal purchase
+        if isinstance(price, int) and result['gold'] >= price:
+            confirm = get_valid_input(f"Hire {freelancer_choice.title()} for {price} gold? (y/n): ", ['y', 'n'])
+            if confirm == 'y':
+                result['gold'] -= price
+                result['cart'].append(freelancer_choice)
+                freelancers_shop.pop(freelancer_choice)
+                print(f"You hired {freelancer_choice.title()}!")
+        else:
+            print("Not enough gold!")
+            input("Press Enter to continue...")
+            return result
+    
+    # Offer immediate battle option for hired freelancers
+    if freelancer_choice in result['cart'] and freelancer_choice not in ['minstrel', 'ze germane']:
+        battle_choice = get_valid_input("Ready for battle with your new ally? (yes/no/inventory): ", ['yes', 'no', 'inventory'])
+        
+        if battle_choice == 'inventory':
+            show_inventory(result['gold'], result['cart'], [])
+        elif battle_choice == 'yes':
+            result['game_ended'] = handle_freelancer_battle(freelancer_choice, player_name)
+    
+    input("Press Enter to continue...")
+    return result
+
+def handle_freelancer_battle(freelancer_name, player_name):
+    """Handle immediate battle with hired freelancer"""
+    print(f"\n=== BATTLE BEGINS ===")
+    
+    if freelancer_name == 'brian':
+        print("You used Brian as a meatshield... using the element of surprise!")
+        print("You defeated ze germanz! You're now the village king!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    elif freelancer_name == 'black knight':
+        print("The Black Knight dies heroically in battle, winning it!")
+        print("You revive him with your healing potion.")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    elif freelancer_name == 'grim reaper':
+        print("The Grim Reaper uses 'GRIM EYES' ability...")
+        print("""
+        ___       ___
+    (_o_)     (_o_)
+    . |     /\\      |.
+    (   )   /  \\     (  )
+    \\  /           /  /
+    \\............../
+        \\_____________/
+        """)
+        print("REAPING...............")
+        print("You defeated ze germanz and became village king!")
+        print("With literal death by your side you are crowned!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    elif freelancer_name == 'god':
+        print("GOD APPRECIATES JUSTICE!")
+        print("GOD used 'BRIGHT EYE' ability!")
+        print("""
+_,.--~=~"~=~--.._  
+_.-"  / \\ !   ! / \\  "-._  
+,"     / ,` .---. `, \\     ". 
+/.'   `~  |   /:::::\\   |  ~`   '.
+\\`.  `~   |   \\:::::/   | ~`  ~ .'
+`.  `~  \\ `, `~~~' ,` /   ~`.' 
+"-._   \\ / !   ! \\ /  _.-"  
+"=~~.._  _..~~=`"        
+        """)
+        print("You received the blessing of god!")
+        print("You, the son of god have started Terminality with your followers!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    elif freelancer_name == 'mage':
+        print("Your mage fights variantly,")
+        print("MAGE USES STAFF OF UROPE,")
+        print("""
+        ____
+       /----\\.    
+   ===(O)[=====\\--\\=====l
+       \\----/.
+        """)
+        print("You defeated ze germanz!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    elif freelancer_name == 'raddragonore':
+        print("Bro, ya dat cool? damnn!")
+        print("DRAGONORE SUMMONS HIS MYTHICAL CREATURES,")
+        print("""
+<>=======() 
+(/\\___   /|\\\\          ()==========<>_
+\\_/ | \\\\        //|\\   ______/ \\)
+   \\_|  \\\\      // | \\_/
+     \\|\\/|\\_   //  /\\/
+       (.\\/.\)\\ \\_//  /
+        //_/\\_\\/ /  |
+        @@//-|=\\  \\  |
+          \\_=\\_  \\ |
+           \\==\\ \\|\\_ 
+        __(\\===\\(  )\\l
+       (((~) __(_/   |
+       (((~) \\  /
+       ______/ /
+      '------'
+        """)
+        print("Yo enemies are ash bro,")
+        print("You defeated ze germanz!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+        
+    else:
+        print(f"{freelancer_name.title()} fights valiantly!")
+        print("You defeated ze germanz!")
+        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
+        return True
+
+def handle_generic_shop(gold, cart, shop_inventory, shop_name, shop_description):
+    """Handle generic shop purchases"""
+    result = {
+        'gold': gold,
+        'cart': cart.copy()
+    }
+    
+    print(f"\n--- Entering {shop_name} ---")
+    print(f"\n=== {shop_name} ===")
+    print(shop_description)
+    
+    if not shop_inventory:
+        print("The shop is empty! Come back later.")
+        input("Press Enter to continue...")
+        return result
+    
+    print(f"\nAvailable items:")
+    for item, price in shop_inventory.items():
+        print(f"- {item.title()}: {price} gold")
+    
+    shop_options = list(shop_inventory.keys()) + ['exit']
+    choice = get_valid_input("Select an item or 'exit': ", shop_options)
+    
+    if choice == 'exit':
+        return result
+    
+    if choice in shop_inventory:
+        price = shop_inventory[choice]
+        
+        if price > 0 and result['gold'] >= price:
+            confirm = get_valid_input(f"Buy {choice} for {price} gold? (y/n): ", ['y', 'n'])
+            if confirm == 'y':
+                result['gold'] -= price
+                result['cart'].append(choice)
+                shop_inventory.pop(choice)
+                print(f"You bought {choice} for {price} gold!")
+                
+                # Special messages
+                if choice == 'magic beans':
+                    print("These beans tingle with magical energy... they might grow into something amazing!")
+                elif choice == 'newt':
+                    print("The newt looks at you knowingly... something special about this one!")
+                    
+        elif price < 0:
+            result['gold'] += abs(price)
+            result['cart'].append(choice)
+            shop_inventory.pop(choice)
+            print(f"You took {choice} and gained {abs(price)} gold!")
+        else:
+            print("Not enough gold!")
+    
+    input("Press Enter to continue...")
+    return result
+
+def handle_quest_board(gold, completed_quests):
+    """Handle quest board activities"""
+    result = {
+        'gold': gold,
+        'completed_quests': completed_quests.copy()
+    }
+    
+    print("\n--- Entering Quest Board ---")
+    print("\n=== VILLAGE QUEST & BOUNTY BOARD ===")
+    print("The wooden board creaks in the wind, covered with parchment notices.")
+    
+    print("\nAvailable Village Quests:")
+    quest_choices = {}
+    i = 1
+    for quest, details in VILLAGE_QUESTS.items():
+        if quest not in result['completed_quests']:
+            quest_choices[str(i)] = quest
+            print(f"{i}. {quest.title()} - {details['description']} [Reward: {details['reward']} gold]")
+            i += 1
+
+    print("\nBlacksmith Jobs:")
+    for j, (job, details) in enumerate(BLACKSMITH_JOBS.items(), 1):
+        if job not in result['completed_quests']:
+            quest_choices[f"b{j}"] = job
+            print(f"b{j}. {job.title()} - {details['description']} [Reward: {details['reward']} gold]")
+
+    print("\nTavern Activities:")
+    for k, (activity, details) in enumerate(TAVERN_ACTIVITIES.items(), 1):
+        if activity not in result['completed_quests']:
+            quest_choices[f"t{k}"] = activity
+            print(f"t{k}. {activity.title()} - {details['description']} [Reward: {details['reward']} gold]")
+
+    valid_choices = list(quest_choices.keys()) + ['r', 'back']
+    quest_choice = get_valid_input("Choose a quest, 'r' for random adventure, or 'back': ", valid_choices)
+
+    if quest_choice == 'back':
+        pass
+    elif quest_choice == 'r':
+        # Random event
+        event = random.choice(RANDOM_EVENTS)
+        print(f"\n=== RANDOM ADVENTURE ===")
+        print(f"{event['event']}")
+        result['gold'] += event['gold']
+        print(f"You gained {event['gold']} gold!")
+    else:
+        # Handle quest completion
+        quest_name = quest_choices[quest_choice]
+        
+        # Determine quest type and reward
+        if quest_name in VILLAGE_QUESTS:
+            reward = VILLAGE_QUESTS[quest_name]['reward']
+        elif quest_name in BLACKSMITH_JOBS:
+            reward = BLACKSMITH_JOBS[quest_name]['reward']
+        else:
+            reward = TAVERN_ACTIVITIES[quest_name]['reward']
+        
+        print(f"\n=== {quest_name.upper()} ===")
+        
+        # Quest-specific adventures
+        if quest_name == 'hunt wild boar':
+            approach = get_valid_input("How do you approach the boar? (stealth/direct/trap): ", ['stealth', 'direct', 'trap'])
+            if approach == 'stealth':
+                print("You sneak up and take the boar by surprise! Clean kill!")
+                reward += 25
+            elif approach == 'direct':
+                print("You charge head-on! Dangerous but heroic!")
+            else:
+                print("You set a clever trap! The boar walks right into it!")
+                reward += 15
+        
+        elif quest_name == 'explore haunted ruins':
+            approach = get_valid_input("How do you explore the ruins? (careful/bold/mystical): ", ['careful', 'bold', 'mystical'])
+            if approach == 'careful':
+                print("You carefully avoid the traps and find extra treasure!")
+                reward += 50
+            elif approach == 'bold':
+                print("You boldly march through and face the dangers head-on!")
+            else:
+                print("You use mystical knowledge to commune with the spirits!")
+                reward += 30
+        
+        # Complete the quest
+        print(f"Quest completed! You earned {reward} gold!")
+        result['gold'] += reward
+        result['completed_quests'].append(quest_name)
+
+    input("Press Enter to continue...")
+    return result
+
 def main():
     print("Starting Terminal Speil...")
-    # DICTIONARIES
-
-        grocery = {
-        'bread': 10,
-        'cheese': 15,
-        'wine': 50
-    }
-
-    botanical_nursery = {
-        'rose': 5,
-        'herbs': 8,
-        'magic beans': 100
-    }
-
-    farmers_market = {
-        'apple': 2,
-        'carrot': 1,
-        'potato': 3
-    }
-
-    freelancers = {
-        'brian': 700,
-        'black knight': 200,
-        'biccus diccus': 1000,
-        'grim reaper': 5000,
-        'minstrel': 0,
-        'god': 'dedication and hope',
-        'nordic': 2000,
-        'mage': 5000,
-        'ze germane': 1000,
-        'raddragonore': 1000
-    }
-
-    antiques = {
-        'french castle': 400,
-        'wooden grail': 3,
-        'scythe': 1500,
-        'catapult': 75,
-        'german joke': 5,
-        'spear': 100,
-        'axe': 200,
-        'peace': -2000,
-        'rock': 10000,
-        'healing potion': 200,
-        'body armor': 2000,
-    }
-
-    pet_shop = {
-        'blue parrot': 100,
-        'white rabbit': 50,
-        'newt': 20,
-        'wolf': 250,
-        'dragon': 1000,
-        'serpent': 500
-    }
-
-    village_quests = {
-        'hunt wild boar': 
-        {'reward': 150, 
-        'description': 'A wild boar terrorizes the fields!'},
-        'deliver message to next village': 
-        {'reward': 80, 'description': 'Urgent message needs delivery!'},
-        'find lost sheep': 
-        {'reward': 60, 'description': 'Farmer Johann lost his prize sheep!'},
-        'escort merchant caravan': 
-        {'reward': 200, 
-        'description': 'Dangerous roads need protection!'},
-        'gather rare herbs': 
-        {'reward': 120, 
-        'description': 'Village healer needs mystical herbs!'},
-        'repair village well': 
-        {'reward': 100, 
-        'description': 'Well broken, villagers thirsty!'},
-        'catch pickpocket': 
-        {'reward': 180, 
-        'description': 'Thief stealing from market stalls!'},
-        'explore haunted ruins': 
-        {'reward': 300, 
-        'description': 'Ancient ruins hold treasure... and danger!'},
-        'tame wild horse': 
-        {'reward': 250, 
-        'description': 'Magnificent stallion roams the plains!'},
-        'brew healing elixir': 
-        {'reward': 140, 
-        'description': 'Village plagued by mysterious illness!'}
-    }
-
-    blacksmith_jobs = {
-        'sharpen village weapons': {'reward': 90, 'description': 'Village guard needs weapon maintenance!'},
-        'forge horseshoes': {'reward': 50, 'description': 'Stable master needs quality horseshoes!'},
-        'repair armor': {'reward': 70, 'description': 'Damaged armor from last skirmish!'},
-        'craft ceremonial sword': {'reward': 200, 'description': 'Noble wedding needs special blade!'}
-    }
-
-    tavern_activities = {
-        'arm wrestling contest': 
-        {'reward': 75,
-        'description': 'Test your strength against locals!'
-        },
-        'storytelling night': 
-        {'reward': 50,
-        'description': 'Entertain patrons with epic tales!'},
-        'drinking contest': 
-        {'reward': 40, 
-        'description': 'Last one standing wins the pot!'},
-        'solve riddle challenge':
-        {'reward': 85,
-        'description': 'Old sage poses mysterious riddles!'},
-        'bard performance': 
-        {'reward': 65, 
-        'description': 'Play music for coin and glory!'}
-    }
-
-    random_events = [
-        {'event': 'You find a purse dropped by a merchant!', 'gold': 45},
-        {'event': 'A grateful villager tips you for your heroic reputation!', 'gold': 30},
-        {'event': 'You discover ancient coins while walking!', 'gold': 80},
-        {'event': 'A mysterious stranger pays you for information!', 'gold': 60},
-        {'event': 'You help catch a runaway pig and get rewarded!', 'gold': 25},
-        {'event': 'You find treasure in an old barrel!', 'gold': 95},
-        {'event': 'A noble appreciates your service to the village!', 'gold': 120}
-    ]
-
+    
     # GLOBAL VARIABLES/DEFINES
     completed_quests = []
     time_of_day = "morning"
@@ -149,565 +446,179 @@ def main():
     gold = 10000
     cart = ["healing potion"]
     game_ended = False
-
+    days_passed = 0
+    german_arrival_day = 7
+    player_name = ""
+    
     # MAIN CODE
-    # START MAIN GAME LOGIC
     print("=== MEDIEVAL VILLAGE DEFENSE ===")
     print("Welcome, brave hero!")
 
-    # Get start game input -        get_valid_input .
-    while True:
-        start_input = input("Shall we begin our adventure? (y/n): ").lower()
-        if start_input == 'y':
-            break
-        elif start_input == 'n':
+    # Check for save file
+    if os.path.exists("savegame.json"):
+        load_choice = get_valid_input("Found a saved game! Load it? (y/n): ", ['y', 'n'])
+        if load_choice == 'y':
+            try:
+                save_data = load_game()
+                if save_data:
+                    player_name = save_data.get('player_name', '')
+                    gold = save_data.get('gold', 10000)
+                    cart = save_data.get('cart', ["healing potion"])
+                    completed_quests = save_data.get('completed_quests', [])
+                    days_passed = save_data.get('days_passed', 0)
+                    time_of_day = save_data.get('time_of_day', 'morning')
+                    weather = save_data.get('weather', 'clear')
+                    german_arrival_day = save_data.get('german_arrival_day', 7)
+                    print(f"Welcome back, Sir {player_name}!")
+            except Exception as e:
+                print(f"Error loading save file: {e}")
+                print("Starting new game...")
+
+    if not player_name:
+        # Get start game input
+        start_choice = get_valid_input("Shall we begin our adventure? (y/n): ", ['y', 'n'])
+        if start_choice == 'n':
             print("Game cancelled!")
             sys.exit()
 
-    # Get player name
-    player_name = input("Enter character name: ")
+        # Get player name
+        player_name = input("Enter character name: ").strip()
+        if not player_name:
+            player_name = "Hero"
 
     # Show current time
     current_hour = datetime.datetime.now().hour
     current_time = datetime.datetime.now()
-    print(f"Adventure begins at: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Adventure continues at: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # Show intro - show_intro .
+    # Set time_of_day based on real time if starting new game
+    if days_passed == 0:
+        if current_hour < 6:
+            time_of_day = "night"
+        elif current_hour < 12:
+            time_of_day = "morning" 
+        elif current_hour < 18:
+            time_of_day = "afternoon"
+        else:
+            time_of_day = "evening"
 
-    # Set time_of_day based on real time
-    if current_hour < 6:
-        time_of_day = "night"
-    elif current_hour < 12:
-        time_of_day = "morning" 
-    elif current_hour < 18:
-        time_of_day = "afternoon"
-    else:
-        time_of_day = "evening"
+    # Show intro
     print(f"""
-    === MEDIEVAL VILLAGE DEFENSE ===
+=== MEDIEVAL VILLAGE DEFENSE ===
 
-    Sir {player_name}!
-    Your village is under attack by a Germanic tribe! 
-    You must gather allies, weapons, and supplies to defend your home.
-    The fate of your village (and that special someone) depends on you!
+Sir {player_name}!
+Your village is under attack by a Germanic tribe! 
+You must gather allies, weapons, and supplies to defend your home.
+The fate of your village (and that special someone) depends on you!
 
-    Current Status: {time_of_day.title()}, {weather} weather
-    Ze germanz are approaching... time is running out!
+Current Status: Day {days_passed + 1}, {time_of_day.title()}, {weather} weather
+Time until German arrival: {german_arrival_day - days_passed} days
+Ze germanz are approaching... time is running out!
     """)
 
     # Main game loop
     while not game_ended:
-        # Show atmosphere -  show_atmosphere .
-        
-        if time_of_day == "morning":
-            print("\nThe morning sun casts long shadows across the cobblestones. Birds chirp in the distance.")
-        elif time_of_day == "afternoon":
-            print("\nThe afternoon sun beats down warmly. The village bustles with activity.")
-        elif time_of_day == "evening":
-            print("\nThe evening air carries the scent of cooking fires. Lanterns begin to flicker on.")
-        elif time_of_day == "night":
-            print("\nThe night is quiet except for distant tavern laughter. Stars twinkle overhead.")
-        
-        # Weather description - g get_weather_description .
-        if weather == "clear":
-            print("The sky is clear and bright.")
-        elif weather == "cloudy":
-            print("Gray clouds gather overhead.")
-        elif weather == "rainy":
-            print("Light rain patters on the rooftops.")
-        elif weather == "foggy":
-            print("A thick fog rolls through the streets.")
-        
-        # Show main menu -  show_main_menu .
-        print(f"\n=== MAIN MENU ===")
-        print("i. Check Inventory")
-        print("s. Visit Shops")
-        print("b. Battle Germanic Tribes")
-        print("q. Quit Game\n")
-        
-        # Get main menu choice - get_menu_choice .
-        while True:
-            main_choice = input("Choose an option: ").lower()
-            if main_choice in ['i', 's', 'b', 'q', 'back', '//']:
+        # Check if Germans have arrived
+        if days_passed >= german_arrival_day:
+            print("\nThe Germanic warband has arrived at the village gates!")
+            print("You must face them now or all is lost!")
+            
+            battle_choice = get_valid_input("Face the Germans in battle? (yes/flee): ", ['yes', 'flee'])
+            if battle_choice == 'flee':
+                print("You flee the village in shame...")
+                print("COWARD'S ENDING: The villagers are left to their fate.")
+                print("Thanks for playing!")
+                game_ended = True
                 break
+            else:
+                game_ended = handle_final_battle(cart, player_name, completed_quests, days_passed)
+                break
+
+        # Random events
+        if random.random() < 0.3:
+            event = random.choice(RANDOM_EVENTS)
+            print(f"\n--- RANDOM EVENT ---")
+            print(f"{event['event']}")
+            gold += event['gold']
+            print(f"You gained {event['gold']} gold!")
+            input("Press Enter to continue...")
+
+        # Weather changes
+        if random.random() < 0.2:
+            old_weather = weather
+            weather = random.choice(["clear", "cloudy", "rainy", "foggy"])
+            if weather != old_weather:
+                print(f"\nThe weather changes to {weather}...")
+
+        # Show atmosphere
+        show_atmosphere(time_of_day, weather)
+        
+        # Show main menu
+        show_main_menu(gold, len(cart), days_passed, german_arrival_day, len(completed_quests))
+        
+        # Get main menu choice
+        main_choice = get_valid_input("Choose an option: ", ['i', 's', 'b', 'r', 'save', 'q'])
         
         if main_choice == 'q':
-            print(f"Thanks for playing,sir {player_name}!")
+            save_choice = get_valid_input(f"Save before quitting? (y/n): ", ['y', 'n'])
+            if save_choice == 'y':
+                save_game(player_name, gold, cart, completed_quests, days_passed, 
+                         time_of_day, weather, german_arrival_day)
+            print(f"Thanks for playing, Sir {player_name}!")
             game_ended = True
-        elif main_choice == 'i':
-            # Show inventory - show_inventory .
-            print(f"\n=== INVENTORY ===")
-            print(f"Gold: {gold}")
-            print(f"Items: {', '.join(cart) if cart else 'None'}")
-            print(f"Completed Quests: {len(completed_quests)}")
+            
+        elif main_choice == 'save':
+            save_game(player_name, gold, cart, completed_quests, days_passed, 
+                     time_of_day, weather, german_arrival_day)
+            print("Game saved successfully!")
             input("Press Enter to continue...")
+            
+        elif main_choice == 'i':
+            show_inventory(gold, cart, completed_quests)
+            
+        elif main_choice == 'r':
+            if days_passed >= 3:
+                raid_result = handle_german_raid(cart, player_name)
+                if raid_result == 'victory':
+                    german_arrival_day += 2
+                    print("Your successful raid has delayed the German attack by 2 days!")
+                elif raid_result == 'death':
+                    death_handled = handle_death_alternatives(cart, player_name)
+                    if not death_handled:
+                        game_ended = True
+                        break
+                days_passed += 1
+            else:
+                print("You need more preparation before attempting a raid! (Available after day 3)")
+                input("Press Enter to continue...")
+                
         elif main_choice == 'b':
-            # Check battle ready -  check_battle_ready .
+            # Check battle ready
             battle_items = ['brian', 'black knight', 'grim reaper', 'god', 'mage', 'nordic', 'biccus diccus']
-            battle_ready = False
-            for item in battle_items:
-                if item in cart:
-                    battle_ready = True
-                    break
+            battle_ready = any(item in cart for item in battle_items)
             
             if battle_ready:
-                print("You enter battle with your assembled forces!")
-                print(f"Sir {player_name},YOU WON!Thanks for playing!")
-                game_ended = True
+                print("You decide to face the Germanic threat head-on!")
+                game_ended = handle_final_battle(cart, player_name, completed_quests, days_passed)
             else:
-                print("You need allies or weapons before you can battle!")
+                print("You need allies or powerful weapons before you can battle the Germans!")
+                print("Visit the Freelancers Guild or Antique Shop to prepare.")
                 input("Press Enter to continue...")
+                
         elif main_choice == 's':
-            # Shop selection loop -  handle_shop_selection .
-            shop_loop = True
-            while shop_loop and not game_ended:
-                print("\n=== VILLAGE SHOPS ===")
-                print("1. Freelancers")
-                print("2. Antiques")
-                print("3. Pet Shop")
-                print("4. Grocery")
-                print("5. Botanical Nursery")
-                print("6. Farmers Market")
-                print("7. Quest Board")
-                
-                # Get shop choice
-                while True:
-                    shop_choice = input("Which shop? (1-7 or 'back'): ").strip().lower().replace(' ', '')
-                    if shop_choice in ['1', '2', '3', '4', '5', '6', '7', 'back']:
-                        break
-                
-                if shop_choice == 'back':
-                    shop_loop = False
-                    continue
-                
-                # Handle different shop choices
-                if shop_choice == '1':
-                    # FREELANCERS SHOP - visit_freelancers .
-                    print("\n--- Entering Freelancers ---")
-                    print(f"\n=== FREELANCERS GUILD ===")
-                    print("The guild hall echoes with the sounds of sharpening weapons and hushed conversations.")
-                    
-                    print("\nAvailable Freelancers:")
-                    for name, price in freelancers.items():
-                        print(f"- {name.title()}: {price} gold")
-                    
-                    # Get freelancer choice
-                    freelancer_options = list(freelancers.keys()) + ['exit']
-                    while True:
-                        freelancer_choice = input("Select a freelancer or 'exit': ").lower()
-                        if freelancer_choice in freelancer_options:
-                            break
-                    
-                    if freelancer_choice != 'exit':
-                        # Process freelancer choice - process_freelancer_choice .
-                        price = freelancers[freelancer_choice]
-                        
-                        if freelancer_choice == 'minstrel':
-                            print(f"You hired the minstrel... but he killed and looted you!")
-                            print("YOU DIED! Thanks for playing.")
-                            game_ended = True
-                            break
-                        
-                        if freelancer_choice == 'ze germane':
-                            print(f"You hired ze germane... but he betrayed you immediately!")
-                            print("YOU DIED! Thanks for playing.")
-                            game_ended = True
-                            break
-                        
-                        if gold < price:
-                            print("Not enough gold!")
-                        else:
-                            gold -= price
-                            cart.append(freelancer_choice)
-                        
-                            
-                            while True:
-                                battle_choice = input("Ready for battle? (yes/no/inventory): ").strip().lower().replace(' ', '')
-                                if battle_choice in ['yes', 'no', 'inventory']:
-                                    break
-                            
-                            if battle_choice == 'inventory':
-                                print(f"\n=== INVENTORY ===")
-                                print(f"Gold: {gold}")
-                                print(f"Items: {', '.join(cart) if cart else 'None'}")
-                                print(f"Completed Quests: {len(completed_quests)}")
-                            elif battle_choice == 'yes':
-                                # Handle freelancer battle - handle_freelancer_battle .
-                                print(f"\n=== BATTLE BEGINS ===")
-                                
-                                if freelancer_choice == 'brian':
-                                    print("You used Brian as a meatshield... using the element of surprise!")
-                                    print("You defeated ze germanz! You're now the village king!")
-                                    print(f"Sir {player_name},YOU WON! Thanks for playing!")
-                                    game_ended = True
-                                    break
-                                elif freelancer_choice == 'black knight':
-                                    print("The Black Knight dies heroically in battle, winning it!")
-                                    print("You revive him with your healing potion.")
-                                    print(f"Sir {player_name},YOU WON! Thanks for playing!")
-                                    game_ended = True
-                                    break
-                                elif freelancer_choice == 'grim reaper':
-                                    print("The Grim Reaper uses 'GRIM EYES' ability...")
-                                    print("""
-                             ___       ___
-                            (_o_)     (_o_)
-                           . |     /\      |.
-                          (   )   /  \     (  )
-                           \  /           /  /
-                            \.............../
-                             \_____________/ """)
-                                    print("REAPING...............")
-                                    print("You defeated ze germanz and became village king!")
-                                    print("With literal death by your side you are crowned!")
-                                    print(f"Sir {player_name},YOU WON! Thanks for playing!")
-                                    game_ended = True
-                                    break
-                                elif freelancer_choice == 'god':
-                                    print("GOD APPRECIATES JUSTICE!")
-                                    print("GOD used 'BRIGHT EYE' ability!")
-                                    print("""
-         _,.--~=~"~=~--.._  
-     _.-"  / \ !   ! / \  "-._  
-   ,"     / ,` .---. `, \     ". 
-/.'   `~  |   /:::::\   |  ~`   '.
-\`.  `~   |   \:::::/   | ~`  ~ .'
-  `.  `~  \ `, `~~~' ,` /   ~`.' 
-    "-._   \ / !   ! \ /  _.-"  
-       "=~~.._  _..~~=`"        """)
-                                    print("You received the blessing of god!")
-                                    print("You, the son of god have started Terminality with your followers!")
-                                    print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-                                    game_ended = True
-                                    break
-                                elif  freelancer_choice == 'mage':
-                                    print("""Your mage fights variantly,
-                                    MAGE USES STAFF OF UROPE,
-                                  ____
-                                 /----\.    
-                                ===(O)[=====\--\=====l
-                                 \----/.
-                                    
-                                    """)
-                                elif freelancer_choice == 'raddragonore':
-                                    print("""Bro, ya dat cool? damnn!
-                                    DRAGONORE SUMMONS HIS MYTHICAL CREATURES,
-<>=======() 
-(/\___   /|\\          ()==========<>_
-      \_/ | \\        //|\   ______/ \)
-        \_|  \\      // | \_/
-          \|\/|\_   //  /\/
-           (.\/.)\ \_//  /
-          //_/\_\/ /  |
-         @@//-|=\  \  |
-                \_=\_ \ |
-                \==\ \|\_ 
-             __(\===\(  )\l
-            (((~) __(_/   |
-                 (((~) \  /
-                 ______/ /
-                 '------'
-                    Yo enemies are ash bro,
-                                    """)
-                                    print("You defeated ze germanz!")
-                                    print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-                                else:
-                                    print(f"{freelancer_choice.title()} fights valiantly!")
-                                    print("You defeated ze germanz!")
-                                    print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-                                    game_ended = True
-                                    break
-                
-                elif shop_choice == '2':
-                    # ANTIQUES SHOP - visit_generic_shop .
-                    print("\n--- Entering Antiques ---")
-                    print(f"\n=== ANTIQUE SHOP ===")
-                    print("Dust motes dance in the filtered sunlight. Ancient treasures gleam mysteriously.")
-                    
-                    if not antiques:
-                        print("The shop is empty! Come back later.")
-                    else:
-                        print(f"\nAvailable items:")
-                        for item, price in antiques.items():
-                            print(f"- {item.title()}: {price} gold")
-                        
-                        antique_options = list(antiques.keys()) + ['exit']
-                        while True:
-                            antique_choice = input("Select an item or 'exit': ").strip().lower().replace(' ', '')
-                            if antique_choice in antique_options:
-                                break
-                        
-                        if antique_choice != 'exit' and antique_choice in antiques:
-                            # Process purchase -        process_purchase .
-                            price = antiques[antique_choice]
-                            
-                            if price > 0 and gold >= price:
-                                gold -= price
-                                cart.append(antique_choice)
-                                antiques.pop(antique_choice)
-                                print(f"You bought {antique_choice} for {price} gold!")
-                            elif price < 0:
-                                gold += abs(price)
-                                cart.append(antique_choice)
-                                antiques.pop(antique_choice)
-                                print(f"You took {antique_choice} and gained {abs(price)} gold!")
-                            else:
-                                print("Not enough gold!")
-                
-                elif shop_choice == '3':
-                    # PET SHOP -        visit_generic_shop .
-                    print("\n--- Entering Pet Shop ---")
-                    print(f"\n=== PET SHOP ===")
-                    print("The air fills with chirping, squeaking, and the rustle of small creatures.")
-                    
-                    if not pet_shop:
-                        print("The shop is empty! Come back later.")
-                    else:
-                        print(f"\nAvailable items:")
-                        for item, price in pet_shop.items():
-                            print(f"- {item.title()}: {price} gold")
-                        
-                        pet_options = list(pet_shop.keys()) + ['exit']
-                        while True:
-                            pet_choice = input("Select an item or 'exit': ").strip().lower().replace(' ', '')
-                            if pet_choice in pet_options:
-                                break
-                        
-                        if pet_choice != 'exit' and pet_choice in pet_shop:
-                            # Process purchase - process_purchase 
-                            price = pet_shop[pet_choice]
-                            
-                            if price > 0 and gold >= price:
-                                gold -= price
-                                cart.append(pet_choice)
-                                pet_shop.pop(pet_choice)
-                                print(f"You bought {pet_choice} for {price} gold!")
-                                # Special item message
-                                if pet_choice == 'newt':
-                                    print("The newt looks at you knowingly... something special about this one!")
-                            elif price < 0:
-                                gold += abs(price)
-                                cart.append(pet_choice)
-                                pet_shop.pop(pet_choice)
-                                print(f"You took {pet_choice} and gained {abs(price)} gold!")
-                            else:
-                                print("Not enough gold!")
-                
-                elif shop_choice == '4':
-                    # GROCERY SHOP -        visit_generic_shop .
-                    print("\n--- Entering Grocery ---")
-                    print(f"\n=== GROCERY ===")
-                    print("The aroma of fresh bread and pungent cheese and aged wine fills your nostrils.")
-                    
-                    if not grocery:
-                        print("The shop is empty! Come back later.")
-                    else:
-                        print(f"\nAvailable items:")
-                        for item, price in grocery.items():
-                            print(f"- {item.title()}: {price} gold")
-                        
-                        grocery_options = list(grocery.keys()) + ['exit']
-                        while True:
-                            grocery_choice = input("Select an item or 'exit': ").strip().lower().replace(' ', '')
-                            if grocery_choice in grocery_options:
-                                break
-                        
-                        if grocery_choice != 'exit' and grocery_choice in grocery:
-                            # Process purchase -        process_purchase .
-                            price = grocery[grocery_choice]
-                            
-                            if price > 0 and gold >= price:
-                                gold -= price
-                                cart.append(grocery_choice)
-                                grocery.pop(grocery_choice)
-                                print(f"You bought {grocery_choice} for {price} gold!")
-                            elif price < 0:
-                                gold += abs(price)
-                                cart.append(grocery_choice)
-                                grocery.pop(grocery_choice)
-                                print(f"You took {grocery_choice} and gained {abs(price)} gold!")
-                            else:
-                                print("Not enough gold!")
-                
-                elif shop_choice == '5':
-                    # BOTANICAL NURSERY -        visit_generic_shop .
-                    print("\n--- Entering Botanical Nursery ---")
-                    print(f"\n=== BOTANICAL NURSERY ===")
-                    print("Sweet floral scents and rich earth surround you.")
-                    
-                    if not botanical_nursery:
-                        print("The shop is empty! Come back later.")
-                    else:
-                        print(f"\nAvailable items:")
-                        for item, price in botanical_nursery.items():
-                            print(f"- {item.title()}: {price} gold")
-                        
-                        botanical_options = list(botanical_nursery.keys()) + ['exit']
-                        while True:
-                            botanical_choice = input("Select an item or 'exit': ").strip().lower().replace(' ', '')
-                            if botanical_choice in botanical_options:
-                                break
-                        
-                        if botanical_choice != 'exit' and botanical_choice in botanical_nursery:
-                            # Process purchase -        process_purchase .
-                            price = botanical_nursery[botanical_choice]
-                            
-                            if price > 0 and gold >= price:
-                                gold -= price
-                                cart.append(botanical_choice)
-                                botanical_nursery.pop(botanical_choice)
-                                print(f"You bought {botanical_choice} for {price} gold!")
-                                # Special item message
-                                if botanical_choice == 'magic beans':
-                                    print("These beans tingle with magical energy... they might grow into something amazing!")
-                            elif price < 0:
-                                gold += abs(price)
-                                cart.append(botanical_choice)
-                                botanical_nursery.pop(botanical_choice)
-                                print(f"You took {botanical_choice} and gained {abs(price)} gold!")
-                            else:
-                                print("Not enough gold!")
-                
-                elif shop_choice == '6':
-                    # FARMERS MARKET -        visit_generic_shop .
-                    print("\n--- Entering Farmers Market ---")
-                    print(f"\n=== FARMERS MARKET ===")
-                    print("Fresh produce is arranged in colorful displays.")
-                    
-                    if not farmers_market:
-                        print("The shop is empty! Come back later.")
-                    else:
-                        print(f"\nAvailable items:")
-                        for item, price in farmers_market.items():
-                            print(f"- {item.title()}: {price} gold")
-                        
-                        farmers_options = list(farmers_market.keys()) + ['exit']
-                        while True:
-                            farmers_choice = input("Select an item or 'exit': ").strip().lower().replace(' ', '')
-                            if farmers_choice in farmers_options:
-                                break
-                        
-                        if farmers_choice != 'exit' and farmers_choice in farmers_market:
-                            # Process purchase -        process_purchase .
-                            price = farmers_market[farmers_choice]
-                            
-                            if price > 0 and gold >= price:
-                                gold -= price
-                                cart.append(farmers_choice)
-                                farmers_market.pop(farmers_choice)
-                                print(f"You bought {farmers_choice} for {price} gold!")
-                            elif price < 0:
-                                gold += abs(price)
-                                cart.append(farmers_choice)
-                                farmers_market.pop(farmers_choice)
-                                print(f"You took {farmers_choice} and gained {abs(price)} gold!")
-                            else:
-                                print("Not enough gold!")
-                
-                elif shop_choice == '7':
-                    # QUEST BOARD -        visit_quest_board .
-                    print("\n--- Entering Quest Board ---")
-                    print("\n=== VILLAGE QUEST & BOUNTY BOARD ===")
-                    print("The wooden board creaks in the wind, covered with parchment notices.")
-                    
-                    print("\nAvailable Village Quests:")
-                    quest_choices = {}
-                    i = 1
-                    for quest, details in village_quests.items():
-                        if quest not in completed_quests:
-                            quest_choices[str(i)] = quest
-                            print(f"{i}. {quest.title()} - {details['description']} [Reward: {details['reward']} gold]")
-                            i += 1
-                    
-                    print("\nBlacksmith Jobs:")
-                    for j, (job, details) in enumerate(blacksmith_jobs.items(), 1):
-                        if job not in completed_quests:
-                            quest_choices[f"b{j}"] = job
-                            print(f"b{j}. {job.title()} - {details['description']} [Reward: {details['reward']} gold]")
-                    
-                    print("\nTavern Activities:")
-                    for k, (activity, details) in enumerate(tavern_activities.items(), 1):
-                        if activity not in completed_quests:
-                            quest_choices[f"t{k}"] = activity
-                            print(f"t{k}. {activity.title()} - {details['description']} [Reward: {details['reward']} gold]")
-                    
-                    valid_choices = list(quest_choices.keys()) + ['r', 'back']
-                    while True:
-                        quest_choice = input("Choose a quest, 'r' for random adventure, or 'back': ").strip().lower().replace(' ', '')
-                        if quest_choice in valid_choices:
-                            break
-                    
-                    if quest_choice == 'back':
-                        pass  # Continue to next iteration
-                    elif quest_choice == 'r':
-                        # Random event -        handle_random_event .
-                        event = random.choice(random_events)
-                        print(f"\n=== RANDOM ADVENTURE ===")
-                        print(f"{event['event']}")
-                        gold += event['gold']
-                        print(f"You gained {event['gold']} gold!")
-                    else:
-                        # Handle quest completion -        handle_quest_completion .
-                        quest_name = quest_choices[quest_choice]
-                        
-                        # Determine quest type and reward
-                        if quest_name in village_quests:
-                            reward = village_quests[quest_name]['reward']
-                            quest_type = "village"
-                        elif quest_name in blacksmith_jobs:
-                            reward = blacksmith_jobs[quest_name]['reward']
-                            quest_type = "blacksmith"
-                        else:
-                            reward = tavern_activities[quest_name]['reward']
-                            quest_type = "tavern"
-                        
-                        print(f"\n=== {quest_name.upper()} ===")
-                        
-                        # Quest-specific adventures
-                        if quest_name == 'hunt wild boar':
-                            while True:
-                                approach = input("How do you approach the boar? (stealth/direct/trap): ").strip().lower().replace(' ', '')
-                                if approach in ['stealth', 'direct', 'trap']:
-                                    break
-                            
-                            if approach == 'stealth':
-                                print("You sneak up and take the boar by surprise! Clean kill!")
-                                reward += 25
-                            elif approach == 'direct':
-                                print("You charge head-on! Dangerous but heroic!")
-                            else:
-                                print("You set a clever trap! The boar walks right into it!")
-                                reward += 15
-                        
-                        elif quest_name == 'explore haunted ruins':
-                            while True:
-                                approach = input("How do you explore the ruins? (careful/bold/mystical): ").strip().lower().replace(' ', '')
-                                if approach in ['careful', 'bold', 'mystical']:
-                                    break
-                            
-                            if approach == 'careful':
-                                print("You carefully avoid the traps and find extra treasure!")
-                                reward += 50
-                            elif approach == 'bold':
-                                print("You boldly march through and face the dangers head-on!")
-                            else:
-                                print("You use mystical knowledge to commune with the spirits!")
-                                reward += 30
-                        
-                        # Complete the quest
-                        print(f"Quest completed! You earned {reward} gold!")
-                        gold += reward
-                        completed_quests.append(quest_name)
-                
-                if game_ended:
-                    break
+            # Shop selection
+            shop_result = handle_shop_selection(gold, cart, completed_quests, player_name)
+            gold = shop_result['gold']
+            cart = shop_result['cart'] 
+            completed_quests = shop_result['completed_quests']
+            if shop_result['game_ended']:
+                game_ended = True
+                break
+            
+            # Advance time after shopping
+            time_of_day = advance_time(time_of_day)
+            if time_of_day == "morning":
+                days_passed += 1
 
-                # Randomly change weather
-                if random.random() < 0.3:
-                    weather = random.choice(["clear", "cloudy", "rainy", "foggy"])
-                
-                # Show status after each shop visit
-                print(f"\nGold: {gold} | Items: {len(cart)}")
-                input("Press Enter to continue...")
 if __name__ == "__main__":
     main()
