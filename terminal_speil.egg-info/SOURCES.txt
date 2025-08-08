@@ -1,0 +1,8 @@
+README.md
+Terminal_Speil_Main.py
+pyproject.toml
+terminal_speil.egg-info/PKG-INFO
+terminal_speil.egg-info/SOURCES.txt
+terminal_speil.egg-info/dependency_links.txt
+terminal_speil.egg-info/entry_points.txt
+terminal_speil.egg-info/top_level.txt

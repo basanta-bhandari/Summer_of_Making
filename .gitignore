@@ -1,0 +1,11 @@
+/__pycache__
+/dist
+
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.webp

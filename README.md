@@ -1,1 +1,9 @@
-Please read description on the SoM of making site and vote. 
+This is my game that I submitted for Terminalcraft, Summer of Making 2025. Its a simple python game about a guy trying to save his European village from a German tribe. The idea was inspired by 'project' that i did a few months back while learning. Please go on SoM website and vote. :)
+
+
+
+
+
+
+
+ 
