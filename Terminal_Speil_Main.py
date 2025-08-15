@@ -223,12 +223,12 @@ def handle_freelancer_battle(freelancer_name, player_name):
     elif freelancer_name == 'grim reaper':
         print("The Grim Reaper uses 'GRIM EYES' ability...")
         print("""
-        ___       ___
-    (_o_)     (_o_)
-    . |     /\\      |.
+         ___       ___
+        (_o_)     (_o_)
+       . |     /\\      |.
     (   )   /  \\     (  )
-    \\  /           /  /
-    \\............../
+      \\  /           /  /
+       \\............../
         \\_____________/
         """)
         print("REAPING...............")
@@ -243,9 +243,9 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("""
        _,.--~=~"~=~--.._  
     _.-"  / \\ !   ! / \\  "-._  
-,"     / ,` .---. `, \\     ". 
+ ,"     / ,`    .---. `, \\     ". 
 /.'   `~  |   /:::::\\   |  ~`   '.
-\\`.  `~   |   \\:::::/   | ~`  ~ .'
+\\`.  `~   |  \\:::::/   | ~`  ~ .'
     `.  `~  \\ `, `~~~' ,` /   ~`.' 
     "-._   \\ / !   ! \\ /  _.-"  
         "=~~.._  _..~~=`"        
@@ -261,7 +261,7 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("""
         ____
        /----\\.    
-        ===(O)[=====\\--\\=====l
+    ++++++===(O)[=====\\--\\=====l
        \\----/.
         """)
         print("You defeated ze germanz!")
