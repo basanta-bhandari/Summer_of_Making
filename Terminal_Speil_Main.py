@@ -12,7 +12,13 @@ import os
 import sys
 from utils import *
 from game_data import *
-
+def clear_terminal():
+    """Clears the terminal screen."""
+    if os.name == 'nt':  # Check if the operating system is Windows
+        os.system('cls')
+    else:  # Assume Unix-like system
+        os.system('clear')
+ 
 def handle_shop_selection(gold, cart, completed_quests, player_name):
     """Handle shop selection and purchases"""
     result = {
@@ -235,14 +241,14 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("GOD APPRECIATES JUSTICE!")
         print("GOD used 'BRIGHT EYE' ability!")
         print("""
-_,.--~=~"~=~--.._  
-_.-"  / \\ !   ! / \\  "-._  
+       _,.--~=~"~=~--.._  
+    _.-"  / \\ !   ! / \\  "-._  
 ,"     / ,` .---. `, \\     ". 
 /.'   `~  |   /:::::\\   |  ~`   '.
 \\`.  `~   |   \\:::::/   | ~`  ~ .'
-`.  `~  \\ `, `~~~' ,` /   ~`.' 
-"-._   \\ / !   ! \\ /  _.-"  
-"=~~.._  _..~~=`"        
+    `.  `~  \\ `, `~~~' ,` /   ~`.' 
+    "-._   \\ / !   ! \\ /  _.-"  
+        "=~~.._  _..~~=`"        
         """)
         print("You received the blessing of god!")
         print("You, the son of god have started Terminality with your followers!")
@@ -255,7 +261,7 @@ _.-"  / \\ !   ! / \\  "-._
         print("""
         ____
        /----\\.    
-   ===(O)[=====\\--\\=====l
+        ===(O)[=====\\--\\=====l
        \\----/.
         """)
         print("You defeated ze germanz!")
@@ -437,6 +443,7 @@ def handle_quest_board(gold, completed_quests):
     return result
 
 def main():
+    clear_terminal()
     print("Starting Terminal Speil...")
     
     # GLOBAL VARIABLES/DEFINES
@@ -594,7 +601,7 @@ Ze germanz are approaching... time is running out!
                 
         elif main_choice == 'b':
             # Check battle ready
-            battle_items = ['brian', 'black knight', 'grim reaper', 'god', 'mage', 'nordic', 'biccus diccus']
+            battle_items = ['brian', 'black knight', 'grim reaper', 'god', 'mage', 'nordic', 'biccus diccus', 'raddragonore']
             battle_ready = any(item in cart for item in battle_items)
             
             if battle_ready:

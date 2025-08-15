@@ -311,3 +311,4 @@ def tragic_ending(cart, player_name, power):
         print("Though the village falls, your courage inspired others to eventually fight back.")
         print("\n MARTYR ENDING: Your noble death sparked a rebellion that would free the land.")
     return True
+
