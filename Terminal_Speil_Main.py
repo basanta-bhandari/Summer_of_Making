@@ -12,13 +12,14 @@ import os
 import sys
 from utils import *
 from game_data import *
+
 def clear_terminal():
     """Clears the terminal screen."""
     if os.name == 'nt':  # Check if the operating system is Windows
         os.system('cls')
     else:  # Assume Unix-like system
         os.system('clear')
- 
+
 def handle_shop_selection(gold, cart, completed_quests, player_name):
     """Handle shop selection and purchases"""
     result = {
@@ -223,12 +224,12 @@ def handle_freelancer_battle(freelancer_name, player_name):
     elif freelancer_name == 'grim reaper':
         print("The Grim Reaper uses 'GRIM EYES' ability...")
         print("""
-         ___       ___
+        ___       ___
         (_o_)     (_o_)
-       . |     /\\      |.
+    . |     /\\      |.
     (   )   /  \\     (  )
-      \\  /           /  /
-       \\............../
+    \\  /           /  /
+    \\............../
         \\_____________/
         """)
         print("REAPING...............")
@@ -241,9 +242,9 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("GOD APPRECIATES JUSTICE!")
         print("GOD used 'BRIGHT EYE' ability!")
         print("""
-       _,.--~=~"~=~--.._  
+    _,.--~=~"~=~--.._  
     _.-"  / \\ !   ! / \\  "-._  
- ,"     / ,`    .---. `, \\     ". 
+,"     / ,`    .---. `, \\     ". 
 /.'   `~  |   /:::::\\   |  ~`   '.
 \\`.  `~   |  \\:::::/   | ~`  ~ .'
     `.  `~  \\ `, `~~~' ,` /   ~`.' 
@@ -260,9 +261,9 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("MAGE USES STAFF OF UROPE,")
         print("""
         ____
-       /----\\.    
+    /----\\.    
     ++++++===(O)[=====\\--\\=====l
-       \\----/.
+    \\----/.
         """)
         print("You defeated ze germanz!")
         print(f"Sir {player_name}, YOU WON! Thanks for playing!")
@@ -275,18 +276,18 @@ def handle_freelancer_battle(freelancer_name, player_name):
 <>=======() 
 (/\\___   /|\\\\          ()==========<>_
 \\_/ | \\\\        //|\\   ______/ \\)
-   \\_|  \\\\      // | \\_/
-     \\|\\/|\\_   //  /\\/
-       (.\\/.\)\\ \\_//  /
+\\_|  \\\\      // | \\_/
+    \\|\\/|\\_   //  /\\/
+    (.\\/.\)\\ \\_//  /
         //_/\\_\\/ /  |
         @@//-|=\\  \\  |
-          \\_=\\_  \\ |
-           \\==\\ \\|\\_ 
+        \\_=\\_  \\ |
+        \\==\\ \\|\\_ 
         __(\\===\\(  )\\l
-       (((~) __(_/   |
-       (((~) \\  /
-       ______/ /
-      '------'
+    (((~) __(_/   |
+    (((~) \\  /
+    ______/ /
+    '------'
         """)
         print("Yo enemies are ash bro,")
         print("You defeated ze germanz!")
@@ -570,13 +571,13 @@ Ze germanz are approaching... time is running out!
             save_choice = get_valid_input(f"Save before quitting? (y/n): ", ['y', 'n'])
             if save_choice == 'y':
                 save_game(player_name, gold, cart, completed_quests, days_passed, 
-                         time_of_day, weather, german_arrival_day)
+                        time_of_day, weather, german_arrival_day)
             print(f"Thanks for playing, Sir {player_name}!")
             game_ended = True
             
         elif main_choice == 'save':
             save_game(player_name, gold, cart, completed_quests, days_passed, 
-                     time_of_day, weather, german_arrival_day)
+                    time_of_day, weather, german_arrival_day)
             print("Game saved successfully!")
             input("Press Enter to continue...")
             
