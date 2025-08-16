@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: Terminal-Speil-B1
-Version: 1.0.5
-Summary: This is my game that I submitted for Terminal-craft(A YSWS programme for Summer of Making). Its a simple python game about a guy trying to save his European village from a German tribe. The idea was inspired by 'project' that i did a few months back while learning python from scrimba. It kind of 'connects' to Germans so i put the name terminal spiel, ' spiel' means game in German.
+Version: 1.0.6
+Summary: You can play the game by running the following commands(in you terminal):
 Author-email: Basanta Bhandari <bhandari.basanta.47@gmail.com>
 Project-URL: Homepage, https://github.com/basanta-bhandari/Summer_of_Making
 Project-URL: Repository, https://github.com/basanta-bhandari/Summer_of_Making
@@ -18,4 +18,4 @@ Classifier: Topic :: Games/Entertainment :: Role-Playing
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 
-This is my game that I submitted for Terminal-craft. Its a simple python game about a guy trying to save his European village from a German tribe. The idea was inspired by 'project' that i did a few months back while learning python from scrimba. It kind of 'connects' to Germans so i put the name terminal spiel, ' spiel' means game in German
+This is my game that I submitted for Terminal-craft(A YSWS programme for Summer of Making). Its a simple python game about a guy trying to save his European village from a German tribe.It is still in the starting phase I'm planning to add some new features in the upcoming feature.  The idea was inspired by  simple game that I made a few months back while learning python . Its a CLI game that kind of relates to Germans so I put the name terminal spiel because ' spiel' means game in German and..It kinda sounds cool.
