@@ -224,12 +224,12 @@ def handle_freelancer_battle(freelancer_name, player_name):
     elif freelancer_name == 'grim reaper':
         print("The Grim Reaper uses 'GRIM EYES' ability...")
         print("""
-        ___       ___
+         ___       ___
         (_o_)     (_o_)
-    . |     /\\      |.
-    (   )   /  \\     (  )
-    \\  /           /  /
-    \\............../
+      . |     /\\      |.
+     (   )   /  \\     (  )
+      \\  /           /  /
+       \\............../
         \\_____________/
         """)
         print("REAPING...............")
@@ -242,14 +242,14 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("GOD APPRECIATES JUSTICE!")
         print("GOD used 'BRIGHT EYE' ability!")
         print("""
-    _,.--~=~"~=~--.._  
+        _,.--~=~"~=~--.._  
     _.-"  / \\ !   ! / \\  "-._  
-,"     / ,`    .---. `, \\     ". 
+  ,"     / ,`  .---. `, \\    ". 
 /.'   `~  |   /:::::\\   |  ~`   '.
 \\`.  `~   |  \\:::::/   | ~`  ~ .'
-    `.  `~  \\ `, `~~~' ,` /   ~`.' 
-    "-._   \\ / !   ! \\ /  _.-"  
-        "=~~.._  _..~~=`"        
+    `.  `~  \\ ``~~~' ,` /   ~`.' 
+      "-._   \\ / !   ! \\ /_.-"  
+          "=~~.._  _..~~=`"        
         """)
         print("You received the blessing of god!")
         print("You, the son of god have started Terminality with your followers!")
@@ -260,10 +260,11 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("Your mage fights variantly,")
         print("MAGE USES STAFF OF UROPE,")
         print("""
-        ____
-    /----\\.    
-    ++++++===(O)[=====\\--\\=====l
-    \\----/.
+          ____
+         /----\\.    
+            ((O)[=====\\--\\=====l
+         \\----/.
+          |----|
         """)
         print("You defeated ze germanz!")
         print(f"Sir {player_name}, YOU WON! Thanks for playing!")
@@ -273,21 +274,21 @@ def handle_freelancer_battle(freelancer_name, player_name):
         print("Bro, ya dat cool? damnn!")
         print("DRAGONORE SUMMONS HIS MYTHICAL CREATURES,")
         print("""
-<>=======() 
-(/\\___   /|\\\\          ()==========<>_
-\\_/ | \\\\        //|\\   ______/ \\)
-\\_|  \\\\      // | \\_/
-    \\|\\/|\\_   //  /\\/
-    (.\\/.\)\\ \\_//  /
-        //_/\\_\\/ /  |
-        @@//-|=\\  \\  |
-        \\_=\\_  \\ |
-        \\==\\ \\|\\_ 
-        __(\\===\\(  )\\l
-    (((~) __(_/   |
-    (((~) \\  /
-    ______/ /
-    '------'
+ 
+<>=======()          /|\\\\()==========<>_
+    \\_/ | \\\\        //|\\   ______/ \\)
+    \\_|  \\\\      // | \\_/
+            \\|\\/|\\_   //  /\\/
+            (.\\/.\)\\ \\_//  /
+            //_/\\_\\/ /  |
+            @@//-|=\\  \\  |
+                \\_=\\_  \\ |
+                \\==\\ \\|\\_ 
+                __(\\===\\(  )\\l
+            (((~) __(_/   |
+                (((~) \\  /
+                ______/ /
+                '------'
         """)
         print("Yo enemies are ash bro,")
         print("You defeated ze germanz!")

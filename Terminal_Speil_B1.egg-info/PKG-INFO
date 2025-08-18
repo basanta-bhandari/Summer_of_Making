@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: Terminal-Speil-B1
-Version: 1.0.6
-Summary: You can play the game by running the following commands(in you terminal):
+Version: 1.0.8
+Summary: You can play the game by running the following commands(in you terminal): pip install pipx  | pipx install Terminal-Speil-B1 | terminal-speil-b1 | The full description of the game is given below.
 Author-email: Basanta Bhandari <bhandari.basanta.47@gmail.com>
 Project-URL: Homepage, https://github.com/basanta-bhandari/Summer_of_Making
 Project-URL: Repository, https://github.com/basanta-bhandari/Summer_of_Making
