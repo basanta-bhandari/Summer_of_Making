@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Terminal-Speil-B1"
-version = "1.0.8"
+version = "1.0.9"
 description = "You can play the game by running the following commands(in you terminal): pip install pipx  | pipx install Terminal-Speil-B1 | terminal-speil-b1 | The full description of the game is given below."
 authors = [{name = "Basanta Bhandari", email = "bhandari.basanta.47@gmail.com"}]
 readme = "README.md"
