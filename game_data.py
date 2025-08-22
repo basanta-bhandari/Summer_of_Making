@@ -158,3 +158,15 @@ ITEM_DESCRIPTIONS = {
     'wolf': 'A fierce companion for battle',
     'dragon': 'A cool pet ',
 }
+WEIGHTED_QUESTS = {
+    'help_beggar': {
+        'give_gold': {'choice_type': 'heroic', 'reputation': {'villagers': +5, 'church': +3}, 'cost': 20},
+        'ignore': {'choice_type': 'pragmatic', 'reputation': {'nobles': +2}, 'cost': 0},
+        'rob_beggar': {'choice_type': 'ruthless', 'reputation': {'villagers': -10, 'nobles': +5}, 'cost': -10}
+    },
+    'merchant_dispute': {
+        'fair_judgment': {'choice_type': 'heroic', 'reputation': {'villagers': +8}, 'npc': {'village_elder': +10}},
+        'side_with_rich': {'choice_type': 'pragmatic', 'reputation': {'nobles': +10}, 'reward': 50},
+        'extort_both': {'choice_type': 'ruthless', 'reputation': {'villagers': -5, 'nobles': -3}, 'reward': 100}
+    }
+}

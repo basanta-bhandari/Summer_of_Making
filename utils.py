@@ -207,22 +207,81 @@ def handle_german_raid(cart, player_name):
         return 'death'
 
 def handle_final_battle(cart, player_name, completed_quests, days_passed):
-    """Handle the final battle sequence"""
+    """Handle the final battle sequence with enhanced endings"""
     print(f"\n{'='*15} FINAL BATTLE {'='*15}")
     print("The Germanic warband storms toward the village gates!")
-    print("This is your moment of truth, Sir {player_name}!")
+    print(f"This is your moment of truth, Sir {player_name}!")
     
-    # Determine ending based on preparation
-    battle_power = calculate_battle_power(cart, completed_quests, days_passed)
+    # Calculate enhanced battle power
+    battle_power, story_path = calculate_enhanced_battle_power(cart, completed_quests, days_passed)
+    ending_type = determine_final_ending(battle_power, story_path)
     
-    if battle_power >= 10:
-        return epic_victory_ending(cart, player_name, battle_power)
-    elif battle_power >= 7:
-        return heroic_victory_ending(cart, player_name, battle_power)
-    elif battle_power >= 4:
-        return close_victory_ending(cart, player_name, battle_power)
+    print(f"\nTotal Battle Power: {battle_power}")
+    print(f"Your path has been: {story_path.replace('_', ' ').title()}")
+    
+    # Execute the appropriate ending
+    if ending_type == "legendary_hero_ending":
+        return legendary_hero_ending(player_name, battle_power)
+    elif ending_type == "dark_emperor_ending":
+        return dark_emperor_ending(player_name, battle_power)
+    elif ending_type == "beloved_champion_ending":
+        return beloved_champion_ending(player_name, battle_power)
+    elif ending_type == "feared_warlord_ending":
+        return feared_warlord_ending(player_name, battle_power)
     else:
-        return tragic_ending(cart, player_name, battle_power)
+        # Use existing endings for other cases
+        if ending_type == "epic_victory_ending":
+            return epic_victory_ending(cart, player_name, battle_power)
+        elif ending_type == "heroic_victory_ending":
+            return heroic_victory_ending(cart, player_name, battle_power)
+        elif ending_type == "close_victory_ending":
+            return close_victory_ending(cart, player_name, battle_power)
+        else:
+            return tragic_ending(cart, player_name, battle_power)
+
+def legendary_hero_ending(player_name, power):
+    print(f"\n LEGENDARY HERO ENDING!  (Power: {power})")
+    print("Your noble deeds have inspired the entire kingdom!")
+    print("Allied armies from neighboring realms arrive to aid you!")
+    print("The Germanic forces are overwhelmed by your legendary alliance!")
+    print(f"\nSir {player_name}, you are crowned High King of the realm!")
+    print("Elena becomes your Queen, and your children will rule for generations!")
+    print("Bards across the continent sing of your heroic deeds!")
+    print("\n LEGENDARY ENDING: Your name becomes myth and legend! ")
+    return True
+
+def dark_emperor_ending(player_name, power):
+    print(f"\n DARK EMPEROR ENDING!  (Power: {power})")
+    print("Your ruthless reputation has cowed all opposition!")
+    print("The Germanic forces surrender without fighting, knowing your cruelty!")
+    print("Fear of your name spreads across the known world!")
+    print(f"\nEmperor {player_name}, you rule through might and terror!")
+    print("Elena stands beside you, but as a fellow conqueror, not just a lover!")
+    print("Your empire expands as enemies flee before your dark legend!")
+    print("\n DARK ENDING: You rule through fear, but you rule absolutely! ")
+    return True
+
+def beloved_champion_ending(player_name, power):
+    print(f"\n BELOVED CHAMPION ENDING!  (Power: {power})")
+    print("The villagers' love for you turns them into fierce defenders!")
+    print("Every citizen fights with the courage of heroes for their beloved champion!")
+    print("Your kindness has created an unbreakable bond with the people!")
+    print(f"\nChampion {player_name}, you are elected as the people's eternal protector!")
+    print("Elena and you lead a golden age of prosperity and happiness!")
+    print("Your rule is remembered as the most peaceful era in history!")
+    print("\n BELOVED ENDING: Love conquers all, and all love you! ")
+    return True
+
+def feared_warlord_ending(player_name, power):
+    print(f"\n⚡ FEARED WARLORD ENDING! ⚡ (Power: {power})")
+    print("Your brutal efficiency has created a war machine!")
+    print("The Germanic forces break against your disciplined cruelty!")
+    print("Enemies speak your name in whispers, afraid to invoke your wrath!")
+    print(f"\nWarlord {player_name}, you forge an empire built on strength!")
+    print("Elena rules beside you, respected and feared across the lands!")
+    print("Your iron fist brings order, though at the cost of freedom!")
+    print("\n WARLORD ENDING: Through strength, you bring harsh peace! ")
+    return True
 
 def calculate_battle_power(cart, completed_quests, days_passed):
     """Calculate total battle effectiveness"""
@@ -741,3 +800,291 @@ def handle_quest_board(gold, completed_quests):
     return result
 
 
+import json
+import os
+import datetime
+from typing import Dict, List, Optional
+
+class SaveSlotManager:
+    def __init__(self, max_slots: int = 5):
+        self.max_slots = max_slots
+        self.save_directory = "saves"
+        self.ensure_save_directory()
+    
+    def ensure_save_directory(self):
+        """Create saves directory if it doesn't exist"""
+        if not os.path.exists(self.save_directory):
+            os.makedirs(self.save_directory)
+    
+    def get_save_filename(self, slot_number: int) -> str:
+        """Generate filename for a specific save slot"""
+        return os.path.join(self.save_directory, f"savegame_slot_{slot_number}.json")
+    
+    def get_all_save_info(self) -> List[Dict]:
+        """Get information about all save slots"""
+        save_info = []
+        
+        for slot in range(1, self.max_slots + 1):
+            filename = self.get_save_filename(slot)
+            
+            if os.path.exists(filename) and self.is_valid_save_file(filename):
+                try:
+                    with open(filename, 'r') as file:
+                        data = json.load(file)
+                        
+                    save_info.append({
+                        'slot': slot,
+                        'exists': True,
+                        'player_name': data.get('player_name', 'Unknown'),
+                        'days_passed': data.get('days_passed', 0),
+                        'gold': data.get('gold', 0),
+                        'save_date': data.get('save_date', 'Unknown'),
+                        'playtime': data.get('playtime', 'Unknown')
+                    })
+                except Exception:
+                    save_info.append({
+                        'slot': slot,
+                        'exists': False,
+                        'corrupted': True
+                    })
+            else:
+                save_info.append({
+                    'slot': slot,
+                    'exists': False
+                })
+        
+        return save_info
+    
+    def is_valid_save_file(self, filepath: str) -> bool:
+        """Check if save file exists and contains valid save game data"""
+        if not os.path.exists(filepath):
+            return False
+        
+        try:
+            with open(filepath, 'r') as file:
+                data = json.load(file)
+                
+            if not isinstance(data, dict) or len(data) == 0:
+                return False
+            
+            expected_keys = ['player_name', 'gold', 'cart', 'completed_quests', 
+                           'days_passed', 'time_of_day', 'weather', 'german_arrival_day']
+            
+            return any(key in data for key in expected_keys)
+            
+        except (json.JSONDecodeError, FileNotFoundError, IOError):
+            return False
+    
+    def display_save_slots(self):
+        """Display all save slots in a formatted way"""
+        print("\n" + "="*60)
+        print("                    SAVE SLOTS")
+        print("="*60)
+        
+        save_info = self.get_all_save_info()
+        
+        for info in save_info:
+            slot_num = info['slot']
+            
+            if info['exists']:
+                if info.get('corrupted'):
+                    print(f"[{slot_num}] CORRUPTED SAVE FILE")
+                else:
+                    print(f"[{slot_num}] {info['player_name']} - Day {info['days_passed']} - {info['gold']} gold")
+                    print(f"    Saved: {info['save_date']}")
+            else:
+                print(f"[{slot_num}] Empty Slot")
+            
+            print("-" * 60)
+        
+        print("[0] Back to main menu")
+        print("="*60)
+    
+    def save_game_to_slot(self, slot_number: int, player_name: str, gold: int, 
+                         cart: List, completed_quests: List, days_passed: int,
+                         time_of_day: str, weather: str, german_arrival_day: int,
+                         start_time: datetime.datetime = None) -> bool:
+        """Save game data to specific slot"""
+        if slot_number < 1 or slot_number > self.max_slots:
+            print(f"Invalid slot number! Must be between 1 and {self.max_slots}")
+            return False
+        
+        filename = self.get_save_filename(slot_number)
+        
+        # Calculate playtime if start_time is provided
+        playtime = "Unknown"
+        if start_time:
+            current_time = datetime.datetime.now()
+            time_diff = current_time - start_time
+            hours, remainder = divmod(time_diff.total_seconds(), 3600)
+            minutes, _ = divmod(remainder, 60)
+            playtime = f"{int(hours):02d}:{int(minutes):02d}"
+        
+        save_data = {
+            'player_name': player_name,
+            'gold': gold,
+            'cart': cart,
+            'completed_quests': completed_quests,
+            'days_passed': days_passed,
+            'time_of_day': time_of_day,
+            'weather': weather,
+            'german_arrival_day': german_arrival_day,
+            'save_date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'playtime': playtime
+        }
+        
+        try:
+            with open(filename, 'w') as file:
+                json.dump(save_data, file, indent=2)
+            return True
+        except Exception as e:
+            print(f"Failed to save game: {e}")
+            return False
+    
+    def load_game_from_slot(self, slot_number: int) -> Optional[Dict]:
+        """Load game data from specific slot"""
+        if slot_number < 1 or slot_number > self.max_slots:
+            return None
+        
+        filename = self.get_save_filename(slot_number)
+        
+        if not self.is_valid_save_file(filename):
+            return None
+        
+        try:
+            with open(filename, 'r') as file:
+                return json.load(file)
+        except Exception as e:
+            print(f"Failed to load game: {e}")
+            return None
+    
+    def delete_save_slot(self, slot_number: int) -> bool:
+        """Delete a save slot"""
+        if slot_number < 1 or slot_number > self.max_slots:
+            return False
+        
+        filename = self.get_save_filename(slot_number)
+        
+        if os.path.exists(filename):
+            try:
+                os.remove(filename)
+                return True
+            except Exception as e:
+                print(f"Failed to delete save: {e}")
+                return False
+        return True  # File doesn't exist, so "deletion" successful
+
+def handle_save_menu(save_manager: SaveSlotManager, player_name: str, gold: int,
+                    cart: List, completed_quests: List, days_passed: int,
+                    time_of_day: str, weather: str, german_arrival_day: int,
+                    moral_choices: Dict, reputation: Dict, npc_relationships: Dict,
+                    start_time: datetime.datetime = None):
+    while True:
+        save_manager.display_save_slots()
+        
+        try:
+            choice = input("\nSelect slot to save (1-5) or 0 to cancel: ").strip()
+            
+            if choice == '0':
+                break
+            
+            slot_num = int(choice)
+            if slot_num < 1 or slot_num > save_manager.max_slots:
+                print("Invalid slot number!")
+                input("Press Enter to continue...")
+                continue
+            
+            # Check if slot has existing save
+            save_info = save_manager.get_all_save_info()
+            slot_info = next((info for info in save_info if info['slot'] == slot_num), None)
+            
+            if slot_info and slot_info['exists']:
+                confirm = input(f"Slot {slot_num} already contains a save. Overwrite? (y/n): ").lower()
+                if confirm != 'y':
+                    continue
+            
+            if save_manager.save_game_to_slot(slot_num, player_name, gold, cart,
+                                            completed_quests, days_passed, time_of_day,
+                                            weather, german_arrival_day, start_time):
+                print(f"Game saved to slot {slot_num} successfully!")
+                input("Press Enter to continue...")
+                break
+            else:
+                print("Failed to save game!")
+                input("Press Enter to continue...")
+                
+        except ValueError:
+            print("Please enter a valid number!")
+            input("Press Enter to continue...")
+
+def handle_load_menu(save_manager: SaveSlotManager) -> Optional[Dict]:
+    """Handle the load game menu"""
+    while True:
+        save_manager.display_save_slots()
+        
+        try:
+            choice = input("\nSelect slot to load (1-5), 'd' to delete, or 0 to cancel: ").strip().lower()
+            
+            if choice == '0':
+                return None
+            
+            if choice == 'd':
+                delete_slot = input("Which slot to delete (1-5)? ").strip()
+                try:
+                    delete_num = int(delete_slot)
+                    if 1 <= delete_num <= save_manager.max_slots:
+                        confirm = input(f"Really delete slot {delete_num}? (y/n): ").lower()
+                        if confirm == 'y':
+                            if save_manager.delete_save_slot(delete_num):
+                                print(f"Slot {delete_num} deleted!")
+                            else:
+                                print("Failed to delete slot!")
+                    else:
+                        print("Invalid slot number!")
+                except ValueError:
+                    print("Invalid input!")
+                input("Press Enter to continue...")
+                continue
+            
+            slot_num = int(choice)
+            if slot_num < 1 or slot_num > save_manager.max_slots:
+                print("Invalid slot number!")
+                input("Press Enter to continue...")
+                continue
+            
+            save_data = save_manager.load_game_from_slot(slot_num)
+            if save_data:
+                return save_data
+            else:
+                print("No valid save data in this slot!")
+                input("Press Enter to continue...")
+                
+        except ValueError:
+            print("Please enter a valid number!")
+            input("Press Enter to continue...")
+def track_decision(choice_type, reputation_changes, npc_changes=None):
+    # This function needs access to the global variables
+    # For now, just print what would happen
+    print(f"Decision tracked: {choice_type}")
+    print(f"Reputation changes: {reputation_changes}")
+    if npc_changes:
+        print(f"NPC relationship changes: {npc_changes}")
+
+def determine_story_path():
+    # Placeholder - you'll need to pass moral_choices as parameter
+    return "balanced_path"
+
+def calculate_enhanced_battle_power(cart, completed_quests, days_passed):
+    power = calculate_battle_power(cart, completed_quests, days_passed)
+    # Add other bonuses here
+    return power, determine_story_path()
+
+def determine_final_ending(battle_power, story_path):
+    if battle_power >= 15:
+        return "legendary_hero_ending"
+    elif battle_power >= 12:
+        return "heroic_victory_ending" 
+    elif battle_power >= 8:
+        return "close_victory_ending"
+    else:
+        return "tragic_ending"
