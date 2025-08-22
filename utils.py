@@ -94,194 +94,101 @@ def advance_time(current_time):
     current_index = time_sequence.index(current_time)
     return time_sequence[(current_index + 1) % 4]
 
-def save_game(player_name, gold, cart, completed_quests, days_passed, time_of_day, weather, german_arrival_day):
-    """Save game state to file"""
-    save_data = {
-        'player_name': player_name,
-        'gold': gold,
-        'cart': cart,
-        'completed_quests': completed_quests,
-        'days_passed': days_passed,
-        'time_of_day': time_of_day,
-        'weather': weather,
-        'german_arrival_day': german_arrival_day,
-        'timestamp': str(datetime.datetime.now())
-    }
-    
-    try:
-        with open('savegame.json', 'w') as f:
-            json.dump(save_data, f, indent=2)
-        print("  Game saved successfully!")
-    except Exception as e:
-        print(f"  Error saving game: {e}")
+def clear_terminal():
+    """Clears the terminal screen."""
+    if os.name == 'nt':  # Check if the operating system is Windows
+        os.system('cls')
+    else:  # Assume Unix-like system
+        os.system('clear')
 
-def load_game():
-    """Load game state from file"""
-    try:
-        with open('savegame.json', 'r') as f:
-            save_data = json.load(f)
-        print("  Game loaded successfully!")
-        return save_data
-    except Exception as e:
-        print(f"  Error loading game: {e}")
-        return None
+def show_opening_intro(player_name):
+    """Display the opening narrative with humor"""
+    print("\n" + "="*70)
+    print("_________TERMINAL_SPEIL_________")
+    print("="*70)
+    
+    print(f"""The bells of the village toll at dawn.
+    That's rarely a good sign.Scouts stumble back into the square, half-panicked, half-dramatic.Apparently, a Germanic warband is on its way.
+    Seven days. That's how long until they arrive here, hungry for loot, sheep, and possibly your left shoe.
 
-def handle_death_alternatives(cart, player_name):
-    """Handle death with healing alternatives"""
-    print(f"\n  Sir {player_name} has fallen in battle!")
-    print("But wait...")
+    The Village Elder claps you on the back, nearly knocking you over.Sir {player_name}! You're the only one who can save us!A bold statement, considering you once lost a drinking contest to a goat.
+    Tiffany, the healer's daughter, is nearby, handing out herbs to calm people down.{TIFFANY_DIALOGUE['opening']}.The villagers wait. Someone coughs. A chicken wanders past.Right. Guess that means it's your job now.""")
     
-    # Check for healing potion
-    if 'healing potion' in cart:
-        choice = get_valid_input("Use healing potion to revive? (y/n): ", ['y', 'n'])
-        if choice == 'y':
-            cart.remove('healing potion')
-            print("  The healing potion restores you to life!")
-            print("You barely escaped death... but you live to fight another day.")
-            return True
-    
-    # Check for mage
-    if 'mage' in cart:
-        choice = get_valid_input("Have your mage cast revival magic? (y/n): ", ['y', 'n'])
-        if choice == 'y':
-            print(" Your mage weaves powerful magic, pulling your soul back from the brink!")
-            print("'Death is but a doorway, and I hold the key!' declares your mage.")
-            return True
-    
-    # Check for grim reaper
-    if 'grim reaper' in cart:
-        choice = get_valid_input("Ask the Grim Reaper to spare you? (y/n): ", ['y', 'n'])
-        if choice == 'y':
-            print("  The Grim Reaper looks upon you with hollow eyes...")
-            print("'You amuse me, mortal. I shall grant you... one more chance.'")
-            print("Death himself has given you another chance!")
-            return True
-    
-    # No alternatives available
-    print("  With no way to cheat death, your adventure ends here...")
-    print("DEATH ENDING: Your heroic attempt will be remembered in village songs.")
-    return False
+    input("\nPress Enter...")
 
-def handle_german_raid(cart, player_name):
-    """Handle raiding the German camp"""
-    print(f"\n{'='*20} GERMAN CAMP RAID {'='*20}")
-    print("You sneak through the forest toward the German encampment...")
-    print("Firelight flickers between the trees ahead.")
+def show_daily_interlude(day, player_name):
+    """ Daily display narrative """
+    print("\n" + "="*70)
     
-    approach = get_valid_input(
-        "How do you approach? (stealth/direct/distraction): ", 
-        ['stealth', 'direct', 'distraction']
-    )
+    if day == 1:
+        print("DAY 1 – THE UNEASY START")
+        print("\nPeople are pretending everything's fine. It's not.")
+        print("You should probably buy something sharp, find some friends,")
+        print("and hope you don't trip over your own sword.")
+        tiffany_line = TIFFANY_DIALOGUE['day_1']
+        
+    elif day == 2:
+        print("DAY 2 – WHISPERS IN THE TAVERN")
+        print("\nThe tavern is buzzing. Some say you'll be a hero.")
+        print("Others say you'll be the first to run when things get ugly.")
+        print("You decide not to correct them… because they might be right.")
+        tiffany_line = TIFFANY_DIALOGUE['day_2']
+        
+    elif day == 3:
+        print("DAY 3 – SMOKE ON THE HORIZON")
+        print("\nScouts swear the Germans burned a village nearby.")
+        print("You swear the scouts just like being dramatic.")
+        print("Then you smell the smoke. Oh. Right.")
+        tiffany_line = TIFFANY_DIALOGUE['day_3']
+        
+    elif day == 4:
+        print("DAY 4 – TENSION BUILDS")
+        print("\nThe blacksmith is hammering like his life depends on it (spoiler: it does).")
+        print("The priest keeps shouting about omens.")
+        print("Tiffany rolls her eyes and mutters something about 'idiots with swords.'")
+        tiffany_line = TIFFANY_DIALOGUE['day_4']
+        
+    elif day == 5:
+        print("DAY 5 – RAIDS AND REGRETS")
+        print("\nThe Germans are close enough to raid.")
+        print("You could sneak in and mess up their plans.")
+        print("Or you could stay home and… continue eating bread.")
+        print("Choices, choices.")
+        tiffany_line = TIFFANY_DIALOGUE['day_5']
+        
+    elif day == 6:
+        print("DAY 6 – THE LONGEST NIGHT")
+        print("\nThe entire village is awake.")
+        print("Some pray, some sharpen pitchforks, some argue about chickens.")
+        print("Tiffany lights candles in the chapel, one for the village, none for you.")
+        print("Figures.")
+        tiffany_line = TIFFANY_DIALOGUE['day_6']
     
-    success_chance = 0.6  # Base 60% success
+    # Tiffany's commentary
+    print(f"\nTiffany watches you with her usual skepticism.")
+    print(f"""{tiffany_line}""")
     
-    # Modify chances based on items
-    if 'black knight' in cart:
-        success_chance += 0.2
-        print("The Black Knight's armor gleams in the moonlight, inspiring confidence!")
-    if 'mage' in cart:
-        success_chance += 0.15
-        print("Your mage weaves concealment spells around your party!")
-    if 'grim reaper' in cart:
-        success_chance += 0.25
-        print("Death itself walks beside you - the Germans sense supernatural dread!")
-    
-    # Approach modifiers
-    if approach == 'stealth':
-        success_chance += 0.1
-        print("You move like shadows through the forest...")
-    elif approach == 'direct':
-        success_chance -= 0.1
-        print("You charge boldly toward their camp!")
-    else:  # distraction
-        print("You create noise on the far side of camp to draw guards away...")
-    
-    if random.random() < success_chance:
-        print(" SUCCESS! You successfully raid the German supply wagons!")
-        print("You steal their siege weapons and scatter their horses!")
-        print("The confused Germans will need time to regroup.")
-        return 'victory'
-    else:
-        print("The raid goes wrong! German sentries spot you!")
-        print("You're overwhelmed by enemy warriors!")
-        return 'death'
+    print("\n" + "="*70)
+    input("Press Enter to continue...")
 
-def handle_final_battle(cart, player_name, completed_quests, days_passed):
-    """Handle the final battle sequence with enhanced endings"""
-    print(f"\n{'='*15} FINAL BATTLE {'='*15}")
-    print("The Germanic warband storms toward the village gates!")
-    print(f"This is your moment of truth, Sir {player_name}!")
+def show_final_battle_intro(player_name):
+    """Display the final battle introduction with humor"""
+    clear_terminal()
+    print("\n" + "="*70)
+    print("DAY 7 – THE BATTLE FOR THE VILLAGE")
+    print("="*70)
     
-    # Calculate enhanced battle power
-    battle_power, story_path = calculate_enhanced_battle_power(cart, completed_quests, days_passed)
-    ending_type = determine_final_ending(battle_power, story_path)
+    print("\nThe Germans have arrived! Shields clashing, war horns blaring,")
+    print("and one guy in the back playing the bagpipes very badly.")
+    print("\nThe Elder shouts:")
+    print(f"\nSir {player_name}! Lead us to glory!")
+    print("\nYou're not sure about 'glory,'")
+    print("but with the villagers behind you and the enemy in front…")
+    print("you don't really have a choice, do you?")
+    print("\nRight then. Try not to die.")
     
-    print(f"\nTotal Battle Power: {battle_power}")
-    print(f"Your path has been: {story_path.replace('_', ' ').title()}")
-    
-    # Execute the appropriate ending
-    if ending_type == "legendary_hero_ending":
-        return legendary_hero_ending(player_name, battle_power)
-    elif ending_type == "dark_emperor_ending":
-        return dark_emperor_ending(player_name, battle_power)
-    elif ending_type == "beloved_champion_ending":
-        return beloved_champion_ending(player_name, battle_power)
-    elif ending_type == "feared_warlord_ending":
-        return feared_warlord_ending(player_name, battle_power)
-    else:
-        # Use existing endings for other cases
-        if ending_type == "epic_victory_ending":
-            return epic_victory_ending(cart, player_name, battle_power)
-        elif ending_type == "heroic_victory_ending":
-            return heroic_victory_ending(cart, player_name, battle_power)
-        elif ending_type == "close_victory_ending":
-            return close_victory_ending(cart, player_name, battle_power)
-        else:
-            return tragic_ending(cart, player_name, battle_power)
-
-def legendary_hero_ending(player_name, power):
-    print(f"\n LEGENDARY HERO ENDING!  (Power: {power})")
-    print("Your noble deeds have inspired the entire kingdom!")
-    print("Allied armies from neighboring realms arrive to aid you!")
-    print("The Germanic forces are overwhelmed by your legendary alliance!")
-    print(f"\nSir {player_name}, you are crowned High King of the realm!")
-    print("Elena becomes your Queen, and your children will rule for generations!")
-    print("Bards across the continent sing of your heroic deeds!")
-    print("\n LEGENDARY ENDING: Your name becomes myth and legend! ")
-    return True
-
-def dark_emperor_ending(player_name, power):
-    print(f"\n DARK EMPEROR ENDING!  (Power: {power})")
-    print("Your ruthless reputation has cowed all opposition!")
-    print("The Germanic forces surrender without fighting, knowing your cruelty!")
-    print("Fear of your name spreads across the known world!")
-    print(f"\nEmperor {player_name}, you rule through might and terror!")
-    print("Elena stands beside you, but as a fellow conqueror, not just a lover!")
-    print("Your empire expands as enemies flee before your dark legend!")
-    print("\n DARK ENDING: You rule through fear, but you rule absolutely! ")
-    return True
-
-def beloved_champion_ending(player_name, power):
-    print(f"\n BELOVED CHAMPION ENDING!  (Power: {power})")
-    print("The villagers' love for you turns them into fierce defenders!")
-    print("Every citizen fights with the courage of heroes for their beloved champion!")
-    print("Your kindness has created an unbreakable bond with the people!")
-    print(f"\nChampion {player_name}, you are elected as the people's eternal protector!")
-    print("Elena and you lead a golden age of prosperity and happiness!")
-    print("Your rule is remembered as the most peaceful era in history!")
-    print("\n BELOVED ENDING: Love conquers all, and all love you! ")
-    return True
-
-def feared_warlord_ending(player_name, power):
-    print(f"\n⚡ FEARED WARLORD ENDING! ⚡ (Power: {power})")
-    print("Your brutal efficiency has created a war machine!")
-    print("The Germanic forces break against your disciplined cruelty!")
-    print("Enemies speak your name in whispers, afraid to invoke your wrath!")
-    print(f"\nWarlord {player_name}, you forge an empire built on strength!")
-    print("Elena rules beside you, respected and feared across the lands!")
-    print("Your iron fist brings order, though at the cost of freedom!")
-    print("\n WARLORD ENDING: Through strength, you bring harsh peace! ")
-    return True
+    print("\n" + "="*70)
+    input("Press Enter to face your destiny...")
 
 def calculate_battle_power(cart, completed_quests, days_passed):
     """Calculate total battle effectiveness"""
@@ -318,62 +225,313 @@ def calculate_battle_power(cart, completed_quests, days_passed):
     
     return power
 
-# Battle ending functions
-def epic_victory_ending(cart, player_name, power):
-    print(f"\n EPIC VICTORY! (Power: {power})")
+def handle_final_battle(cart, player_name, completed_quests, days_passed):
+    """Handle the final battle with narrative epilogues"""
+    print(f"\n{'='*15} FINAL BATTLE {'='*15}")
+    print("The Germanic warband storms toward the village gates!")
+    print(f"This is your moment of truth, Sir {player_name}!")
     
-    if 'god' in cart:
-        print("GOD himself fights beside you!")
-        print("Divine light blinds the German forces as heavenly power flows through you!")
-    elif 'grim reaper' in cart:
-        print("Death incarnate reaps the souls of your enemies!")
-        print("The German warriors flee in supernatural terror!")
-    elif 'raddragonore' in cart:
-        print("Mythical dragons soar overhead, raining fire upon the invaders!")
+    # Calculate battle power
+    battle_power = calculate_battle_power(cart, completed_quests, days_passed)
     
-    print(f"\nSir {player_name}, your legendary victory echoes across all kingdoms!")
-    print("Elena rushes to your arms as the village celebrates your triumph!")
-    print("You are crowned as the new Lord Protector of the realm!")
-    print("\n LEGENDARY ENDING: Your name will be sung for generations! ✨")
-    return True
-
-def heroic_victory_ending(cart, player_name, power):
-    print(f"\n HEROIC VICTORY! (Power: {power})")
-    print("Your well-prepared forces clash with the Germans in epic battle!")
-    print("Though the fight is fierce, your superior strategy wins the day!")
-    print(f"\nSir {player_name}, you have saved the village and won Elena's heart!")
-    print("The grateful villagers build a statue in your honor!")
-    print("\n HEROIC ENDING: You are remembered as the village's greatest champion!")
-    return True
-
-def close_victory_ending(cart, player_name, power):
-    print(f"\n NARROW VICTORY! (Power: {power})")
-    print("The battle is desperate and bloody, with victory hanging by a thread!")
-    print("Just when all seems lost, your determination turns the tide!")
-    print(f"\nSir {player_name}, you barely saved the village, but at great cost...")
-    print("Elena tends your wounds as the village slowly rebuilds.")
-    print("\n SURVIVOR ENDING: You proved that courage conquers all!")
-    return True
-
-def tragic_ending(cart, player_name, power):
-    print(f"\n  TRAGIC DEFEAT... (Power: {power})")
-    print("Despite your brave efforts, you were simply not prepared enough...")
-    print("The Germans overwhelm your meager forces!")
+    print(f"\nTotal Battle Power: {battle_power}")
     
-    # Check for death alternatives one last time
-    death_handled = handle_death_alternatives(cart, player_name)
-    if not death_handled:
-        print(f"\nSir {player_name}'s valiant sacrifice will always be remembered...")
-        print("Though the village falls, your courage inspired others to eventually fight back.")
-        print("\n MARTYR ENDING: Your noble death sparked a rebellion that would free the land.")
+    # Determine ending based on battle power
+    if battle_power >= 15:
+        return legendary_hero_ending(player_name, battle_power)
+    elif battle_power >= 12:
+        return martyr_ending(player_name, battle_power)
+    elif battle_power >= 10:
+        return dark_emperor_ending(player_name, battle_power)
+    elif battle_power >= 8:
+        return beloved_champion_ending(player_name, battle_power)
+    elif battle_power >= 6:
+        return feared_warlord_ending(player_name, battle_power)
+    elif battle_power >= 4:
+        return close_survivor_ending(player_name, battle_power)
+    else:
+        return tragic_defeat_ending(player_name, battle_power)
+
+# Updated ending functions with humor
+def legendary_hero_ending(player_name, power):
+    print(f"\nLEGENDARY HERO ENDING! (Power: {power})")
+    print("\nSomehow, against all odds (and common sense), you win.")
+    print("The Germans scatter, legends spread, and people start calling you Sir [PlayerName] the Magnificent.")
+    print("You mostly answer to 'Oi, you with the sword,' but whatever.")
+    print("\nBards sing your name. People cheer.")
+    print("Even Tiffany admits she's impressed… once… quietly… while nobody was listening.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_legendary']}")
+    print("\nLEGENDARY ENDING: Your name becomes myth and legend!")
     return True
 
-def clear_terminal():
-    """Clears the terminal screen."""
-    if os.name == 'nt':  # Check if the operating system is Windows
-        os.system('cls')
-    else:  # Assume Unix-like system
-        os.system('clear')
+def martyr_ending(player_name, power):
+    print(f"\nMARTYR ENDING! (Power: {power})")
+    print("\nThe gates fall. You fight to the bitter end.")
+    print("Your last words are probably something heroic like 'For the village!'")
+    print("—or possibly 'Ow, my spleen!' Nobody remembers clearly.")
+    print("\nWhat they do remember is that you didn't run.")
+    print("You fell, and because of that, others rose.")
+    print("Songs are sung, though most of them are badly out of tune.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_martyr']}")
+    print("\nMARTYR ENDING: Your sacrifice inspires a rebellion!")
+    return True
+
+def dark_emperor_ending(player_name, power):
+    print(f"\nDARK EMPEROR ENDING! (Power: {power})")
+    print("\nTurns out fear is a great motivator.")
+    print("The Germans kneel before you, and the villagers… well, they don't dare argue.")
+    print("You rule with an iron fist, a dramatic cloak, and far too many statues of yourself.")
+    print("\nTiffany calls you a tyrant, but hey — at least she's still patching up your paper cuts.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_emperor']}")
+    print("\nDARK ENDING: You rule through fear, but you rule absolutely!")
+    return True
+
+def beloved_champion_ending(player_name, power):
+    print(f"\nBELOVED CHAMPION ENDING! (Power: {power})")
+    print("\nThe villagers rally to you, not because you're perfect,")
+    print("but because you're the only one silly enough to stand at the front.")
+    print("Pitchforks and courage defeat steel and shields.")
+    print("\nYou're hailed as the Champion, though privately,")
+    print("people still remember the time you slipped in a puddle mid-battle.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_champion']}")
+    print("\nBELOVED ENDING: Love conquers all, and all love you!")
+    return True
+
+def feared_warlord_ending(player_name, power):
+    print(f"\nFEARED WARLORD ENDING! (Power: {power})")
+    print("\nYou get the job done.")
+    print("Not with kindness. Not with cleverness.")
+    print("But with sheer, terrifying brutality.")
+    print("\nThe Germans flee. The villagers obey.")
+    print("Nobody dares question you… except Tiffany.")
+    print("And you've learned better than to argue with her.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_warlord']}")
+    print("\nWARLORD ENDING: Through strength, you bring harsh peace!")
+    return True
+
+def close_survivor_ending(player_name, power):
+    print(f"\nCLOSE SURVIVOR ENDING! (Power: {power})")
+    print("\nVictory, if you can call it that.")
+    print("Half the village is gone, half your teeth are loose,")
+    print("and the Germans left more scorch marks than memories.")
+    print("\nBut you're alive. Somehow.")
+    print("And that's apparently enough to make you a 'hero.'")
+    print("Sure. Let's go with that.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_survivor']}")
+    print("\nSURVIVOR ENDING: You proved that courage conquers all!")
+    return True
+
+def tragic_defeat_ending(player_name, power):
+    print(f"\nTRAGIC DEFEAT ENDING! (Power: {power})")
+    print("\nThe Germans smash through. The village burns.")
+    print("Your name goes down in history…")
+    print("mostly as 'that person who tried really hard, bless them.'")
+    print("\nTiffany survives, patching up the broken and swearing under her breath.")
+    print("She tells your story anyway, because someone has to.")
+    print("And against all odds, people listen.")
+    print(f"\n{TIFFANY_DIALOGUE['ending_defeat']}")
+    print("\nTRAGIC ENDING: Your noble death sparked a rebellion that would free the land.")
+    return True
+
+def handle_german_raid(cart, player_name):
+    """Handle raiding the German camp with narrative elements"""
+    print(f"\n{'='*20} GERMAN CAMP RAID {'='*20}")
+    print("You sneak through the forest toward the German encampment...")
+    print("Firelight flickers between the trees ahead.")
+    
+    print(f"\nBefore you leave, Tiffany pulls you aside.")
+    print(f"""{TIFFANY_DIALOGUE['raid_before']}""")
+    
+    approach = get_valid_input(
+        "How do you approach? (stealth/direct/distraction): ", 
+        ['stealth', 'direct', 'distraction']
+    )
+    
+    success_chance = 0.6  # Base 60% success
+    
+    # Modify chances based on items
+    if 'black knight' in cart:
+        success_chance += 0.2
+        print("The Black Knight's armor gleams in the moonlight, inspiring confidence!")
+    if 'mage' in cart:
+        success_chance += 0.15
+        print("Your mage weaves concealment spells around your party!")
+    if 'grim reaper' in cart:
+        success_chance += 0.25
+        print("Death itself walks beside you - the Germans sense supernatural dread!")
+    
+    # Approach modifiers
+    if approach == 'stealth':
+        success_chance += 0.1
+        print("You move like shadows through the forest...")
+    elif approach == 'direct':
+        success_chance -= 0.1
+        print("You charge boldly toward their camp!")
+    else:  # distraction
+        print("You create noise on the far side of camp to draw guards away...")
+    
+    if random.random() < success_chance:
+        print(" SUCCESS! You successfully raid the German supply wagons!")
+        print("You steal their siege weapons and scatter their horses!")
+        print("The confused Germans will need time to regroup.")
+        
+        print(f"\nUpon your return, Tiffany sighs in relief.")
+        print(f"""{TIFFANY_DIALOGUE['raid_success']}""")
+        
+        return 'victory'
+    else:
+        print("The raid goes wrong! German sentries spot you!")
+        print("You're overwhelmed by enemy warriors!")
+        
+        print(f"\nTiffany watches in horror as you're struck down.")
+        print(f"""{TIFFANY_DIALOGUE['raid_failure']}""")
+        
+        return 'death'
+
+def handle_death_alternatives(cart, player_name):
+    """Handle death with healing alternatives and Tiffany's reactions"""
+    print(f"\n  Sir {player_name} has fallen in battle!")
+    print("But wait...")
+    
+    # Check for healing potion
+    if 'healing potion' in cart:
+        choice = get_valid_input("Use healing potion to revive? (y/n): ", ['y', 'n'])
+        if choice == 'y':
+            cart.remove('healing potion')
+            print("  The healing potion restores you to life!")
+            
+            print(f"\nTiffany mutters as you open your eyes.")
+            print(f"""{TIFFANY_DIALOGUE['death_alternative_potion']}""")
+            
+            print("You barely escaped death... but you live to fight another day.")
+            return True
+    
+    # Check for mage
+    if 'mage' in cart:
+        choice = get_valid_input("Have your mage cast revival magic? (y/n): ", ['y', 'n'])
+        if choice == 'y':
+            print(" Your mage weaves powerful magic, pulling your soul back from the brink!")
+            print("'Death is but a doorway, and I hold the key!' declares your mage.")
+            
+            print(f"\nTiffany watches in awe as the magic revives you.")
+            print(f"""{TIFFANY_DIALOGUE['death_alternative_mage']}""")
+            
+            return True
+    
+    # Check for grim reaper
+    if 'grim reaper' in cart:
+        choice = get_valid_input("Ask the Grim Reaper to spare you? (y/n): ", ['y', 'n'])
+        if choice == 'y':
+            print("  The Grim Reaper looks upon you with hollow eyes...")
+            print("'You amuse me, mortal. I shall grant you... one more chance.'")
+            print("Death himself has given you another chance!")
+            
+            print(f"\nTiffany trembles as the Grim Reaper spares you.")
+            print(f"""{TIFFANY_DIALOGUE['death_alternative_reaper']}""")
+            
+            return True
+    
+    # No alternatives available
+    print("  With no way to cheat death, your adventure ends here...")
+    
+    print(f"\nTiffany kneels by your body, tears welling in her eyes.")
+    print(f"""{TIFFANY_DIALOGUE['death_final']}""")
+    
+    print("DEATH ENDING: Your heroic attempt will be remembered in village songs.")
+    return False
+
+def handle_freelancer_battle(freelancer_name, player_name):
+    """Handle immediate battle with hired freelancer"""
+    print(f"\n=== BATTLE BEGINS ===")
+    
+    if freelancer_name == 'brian':
+        print("You used Brian as a meatshield... using the element of surprise!")
+        print("Brian takes the hit but pushes forward!")
+        print("Together, you create an opening and strike decisively!")
+        
+    elif freelancer_name == 'black knight':
+        print("The Black Knight charges forward with impossible speed!")
+        print("His sword moves like lightning, cutting down Germans left and right!")
+        print("When he falls, you revive him with your healing potion!")
+        print("Together, you deliver the final blow!")
+        
+    elif freelancer_name == 'grim reaper':
+        print("The Grim Reaper raises his scythe, eyes glowing with otherworldly power!")
+        print("""
+         ___       ___
+        (_o_)     (_o_)
+      . |     /\\      |.
+     (   )   /  \\     (  )
+      \\  /           /  /
+       \\............../
+        \\_____________/
+        """)
+        print("REAPING...............")
+        print("Souls fly from German bodies as death claims them!")
+        print("The remaining Germans flee in terror!")
+        
+    elif freelancer_name == 'god':
+        print("GOD appears in a blaze of divine light!")
+        print("GOD used 'BRIGHT EYE' ability!")
+        print("""
+        _,.--~=~"~=~--.._  
+    _.-"  / \\ !   ! / \\  "-._  
+  ,"     / ,`  .---. `, \\    ". 
+/.'   `~  |   /:::::\\   |  ~`   '.
+\\`.  `~   |  \\:::::/   | ~`  ~ .'
+    `.  `~  \\ ``~~~' ,` /   ~`.' 
+      "-._   \\ / !   ! \\ /_.-"  
+          "=~~.._  _..~~=`"        
+        """)
+        print("Divine light purges the battlefield of all enemies!")
+        print("The Germans are utterly vanquished!")
+        
+    elif freelancer_name == 'mage':
+        print("Your mage begins chanting in an ancient tongue!")
+        print("MAGE USES STAFF OF UROPE!")
+        print("""
+          ____
+         /----\\.    
+            ((O)[=====\\--\\=====l
+         \\----/.
+          |----|
+        """)
+        print("Arcane energy erupts from the staff, creating a vortex of power!")
+        print("Germans are thrown about like ragdolls!")
+        
+    elif freelancer_name == 'raddragonore':
+        print("Raddragonore laughs maniacally as he summons his allies!")
+        print("DRAGONORE SUMMONS HIS MYTHICAL CREATURES!")
+        print("""
+ 
+<>=======()          /|\\\\()==========<>_
+    \\_/ | \\\\        //|\\   ______/ \\)
+    \\_|  \\\\      // | \\_/
+            \\|\\/|\\_   //  /\\/
+            (.\\/.\)\\ \\_//  /
+            //_/\\_\\/ /  |
+            @@//-|=\\  \\  |
+                \\_=\\_  \\ |
+                \\==\\ \\|\\_ 
+                __(\\===\\(  )\\l
+            (((~) __(_/   |
+                (((~) \\  /
+                ______/ /
+                '------'
+        """)
+        print("Dragons, phoenixes, and griffins descend from the skies!")
+        print("The German forces are turned to ash!")
+        
+    else:
+        print(f"{freelancer_name.title()} fights valiantly by your side!")
+        print("Together, you form an unstoppable team!")
+        print("The German forces fall before your combined might!")
+    
+    print(f"\nYou defeated the Germans! The village is saved!")
+    print(f"Tiffany approaches, a rare smile on her face.")
+    print(f"""{TIFFANY_DIALOGUE['freelancer_battle']}""")
+    
+    return True
 
 def handle_shop_selection(gold, cart, completed_quests, player_name):
     """Handle shop selection and purchases"""
@@ -472,8 +630,7 @@ def handle_shop_selection(gold, cart, completed_quests, player_name):
         elif shop_choice == '7':
             # QUEST BOARD
             quest_result = handle_quest_board(result['gold'], result['completed_quests'])
-            result['gold'] = quest_result['gold']
-            result['completed_quests'] = quest_result['completed_quests']
+            result.update(quest_result)
     
     return result
 
@@ -560,102 +717,6 @@ def handle_freelancers_guild(gold, cart, freelancers_shop, player_name):
     input("Press Enter to continue...")
     return result
 
-def handle_freelancer_battle(freelancer_name, player_name):
-    """Handle immediate battle with hired freelancer"""
-    print(f"\n=== BATTLE BEGINS ===")
-    
-    if freelancer_name == 'brian':
-        print("You used Brian as a meatshield... using the element of surprise!")
-        print("You defeated ze germanz! You're now the village king!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    elif freelancer_name == 'black knight':
-        print("The Black Knight dies heroically in battle, winning it!")
-        print("You revive him with your healing potion.")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    elif freelancer_name == 'grim reaper':
-        print("The Grim Reaper uses 'GRIM EYES' ability...")
-        print("""
-         ___       ___
-        (_o_)     (_o_)
-      . |     /\\      |.
-     (   )   /  \\     (  )
-      \\  /           /  /
-       \\............../
-        \\_____________/
-        """)
-        print("REAPING...............")
-        print("You defeated ze germanz and became village king!")
-        print("With literal death by your side you are crowned!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    elif freelancer_name == 'god':
-        print("GOD APPRECIATES JUSTICE!")
-        print("GOD used 'BRIGHT EYE' ability!")
-        print("""
-        _,.--~=~"~=~--.._  
-    _.-"  / \\ !   ! / \\  "-._  
-  ,"     / ,`  .---. `, \\    ". 
-/.'   `~  |   /:::::\\   |  ~`   '.
-\\`.  `~   |  \\:::::/   | ~`  ~ .'
-    `.  `~  \\ ``~~~' ,` /   ~`.' 
-      "-._   \\ / !   ! \\ /_.-"  
-          "=~~.._  _..~~=`"        
-        """)
-        print("You received the blessing of god!")
-        print("You, the son of god have started Terminality with your followers!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    elif freelancer_name == 'mage':
-        print("Your mage fights variantly,")
-        print("MAGE USES STAFF OF UROPE,")
-        print("""
-          ____
-         /----\\.    
-            ((O)[=====\\--\\=====l
-         \\----/.
-          |----|
-        """)
-        print("You defeated ze germanz!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    elif freelancer_name == 'raddragonore':
-        print("Bro, ya dat cool? damnn!")
-        print("DRAGONORE SUMMONS HIS MYTHICAL CREATURES,")
-        print("""
- 
-<>=======()          /|\\\\()==========<>_
-    \\_/ | \\\\        //|\\   ______/ \\)
-    \\_|  \\\\      // | \\_/
-            \\|\\/|\\_   //  /\\/
-            (.\\/.\)\\ \\_//  /
-            //_/\\_\\/ /  |
-            @@//-|=\\  \\  |
-                \\_=\\_  \\ |
-                \\==\\ \\|\\_ 
-                __(\\===\\(  )\\l
-            (((~) __(_/   |
-                (((~) \\  /
-                ______/ /
-                '------'
-        """)
-        print("Yo enemies are ash bro,")
-        print("You defeated ze germanz!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-        
-    else:
-        print(f"{freelancer_name.title()} fights valiantly!")
-        print("You defeated ze germanz!")
-        print(f"Sir {player_name}, YOU WON! Thanks for playing!")
-        return True
-
 def handle_generic_shop(gold, cart, shop_inventory, shop_name, shop_description):
     """Handle generic shop purchases"""
     result = {
@@ -726,20 +787,20 @@ def handle_quest_board(gold, completed_quests):
     i = 1
     for quest, details in VILLAGE_QUESTS.items():
         if quest not in result['completed_quests']:
-            quest_choices[str(i)] = quest
+            quest_choices[str(i)] = {'type': 'village', 'name': quest}
             print(f"{i}. {quest.title()} - {details['description']} [Reward: {details['reward']} gold]")
             i += 1
 
     print("\nBlacksmith Jobs:")
     for j, (job, details) in enumerate(BLACKSMITH_JOBS.items(), 1):
         if job not in result['completed_quests']:
-            quest_choices[f"b{j}"] = job
+            quest_choices[f"b{j}"] = {'type': 'blacksmith', 'name': job}
             print(f"b{j}. {job.title()} - {details['description']} [Reward: {details['reward']} gold]")
 
     print("\nTavern Activities:")
     for k, (activity, details) in enumerate(TAVERN_ACTIVITIES.items(), 1):
         if activity not in result['completed_quests']:
-            quest_choices[f"t{k}"] = activity
+            quest_choices[f"t{k}"] = {'type': 'tavern', 'name': activity}
             print(f"t{k}. {activity.title()} - {details['description']} [Reward: {details['reward']} gold]")
 
     valid_choices = list(quest_choices.keys()) + ['r', 'back']
@@ -756,14 +817,16 @@ def handle_quest_board(gold, completed_quests):
         print(f"You gained {event['gold']} gold!")
     else:
         # Handle quest completion
-        quest_name = quest_choices[quest_choice]
+        quest_info = quest_choices[quest_choice]
+        quest_name = quest_info['name']
+        quest_type = quest_info['type']
         
         # Determine quest type and reward
-        if quest_name in VILLAGE_QUESTS:
+        if quest_type == 'village':
             reward = VILLAGE_QUESTS[quest_name]['reward']
-        elif quest_name in BLACKSMITH_JOBS:
+        elif quest_type == 'blacksmith':
             reward = BLACKSMITH_JOBS[quest_name]['reward']
-        else:
+        else:  # tavern
             reward = TAVERN_ACTIVITIES[quest_name]['reward']
         
         print(f"\n=== {quest_name.upper()} ===")
@@ -798,293 +861,3 @@ def handle_quest_board(gold, completed_quests):
 
     input("Press Enter to continue...")
     return result
-
-
-import json
-import os
-import datetime
-from typing import Dict, List, Optional
-
-class SaveSlotManager:
-    def __init__(self, max_slots: int = 5):
-        self.max_slots = max_slots
-        self.save_directory = "saves"
-        self.ensure_save_directory()
-    
-    def ensure_save_directory(self):
-        """Create saves directory if it doesn't exist"""
-        if not os.path.exists(self.save_directory):
-            os.makedirs(self.save_directory)
-    
-    def get_save_filename(self, slot_number: int) -> str:
-        """Generate filename for a specific save slot"""
-        return os.path.join(self.save_directory, f"savegame_slot_{slot_number}.json")
-    
-    def get_all_save_info(self) -> List[Dict]:
-        """Get information about all save slots"""
-        save_info = []
-        
-        for slot in range(1, self.max_slots + 1):
-            filename = self.get_save_filename(slot)
-            
-            if os.path.exists(filename) and self.is_valid_save_file(filename):
-                try:
-                    with open(filename, 'r') as file:
-                        data = json.load(file)
-                        
-                    save_info.append({
-                        'slot': slot,
-                        'exists': True,
-                        'player_name': data.get('player_name', 'Unknown'),
-                        'days_passed': data.get('days_passed', 0),
-                        'gold': data.get('gold', 0),
-                        'save_date': data.get('save_date', 'Unknown'),
-                        'playtime': data.get('playtime', 'Unknown')
-                    })
-                except Exception:
-                    save_info.append({
-                        'slot': slot,
-                        'exists': False,
-                        'corrupted': True
-                    })
-            else:
-                save_info.append({
-                    'slot': slot,
-                    'exists': False
-                })
-        
-        return save_info
-    
-    def is_valid_save_file(self, filepath: str) -> bool:
-        """Check if save file exists and contains valid save game data"""
-        if not os.path.exists(filepath):
-            return False
-        
-        try:
-            with open(filepath, 'r') as file:
-                data = json.load(file)
-                
-            if not isinstance(data, dict) or len(data) == 0:
-                return False
-            
-            expected_keys = ['player_name', 'gold', 'cart', 'completed_quests', 
-                           'days_passed', 'time_of_day', 'weather', 'german_arrival_day']
-            
-            return any(key in data for key in expected_keys)
-            
-        except (json.JSONDecodeError, FileNotFoundError, IOError):
-            return False
-    
-    def display_save_slots(self):
-        """Display all save slots in a formatted way"""
-        print("\n" + "="*60)
-        print("                    SAVE SLOTS")
-        print("="*60)
-        
-        save_info = self.get_all_save_info()
-        
-        for info in save_info:
-            slot_num = info['slot']
-            
-            if info['exists']:
-                if info.get('corrupted'):
-                    print(f"[{slot_num}] CORRUPTED SAVE FILE")
-                else:
-                    print(f"[{slot_num}] {info['player_name']} - Day {info['days_passed']} - {info['gold']} gold")
-                    print(f"    Saved: {info['save_date']}")
-            else:
-                print(f"[{slot_num}] Empty Slot")
-            
-            print("-" * 60)
-        
-        print("[0] Back to main menu")
-        print("="*60)
-    
-    def save_game_to_slot(self, slot_number: int, player_name: str, gold: int, 
-                         cart: List, completed_quests: List, days_passed: int,
-                         time_of_day: str, weather: str, german_arrival_day: int,
-                         start_time: datetime.datetime = None) -> bool:
-        """Save game data to specific slot"""
-        if slot_number < 1 or slot_number > self.max_slots:
-            print(f"Invalid slot number! Must be between 1 and {self.max_slots}")
-            return False
-        
-        filename = self.get_save_filename(slot_number)
-        
-        # Calculate playtime if start_time is provided
-        playtime = "Unknown"
-        if start_time:
-            current_time = datetime.datetime.now()
-            time_diff = current_time - start_time
-            hours, remainder = divmod(time_diff.total_seconds(), 3600)
-            minutes, _ = divmod(remainder, 60)
-            playtime = f"{int(hours):02d}:{int(minutes):02d}"
-        
-        save_data = {
-            'player_name': player_name,
-            'gold': gold,
-            'cart': cart,
-            'completed_quests': completed_quests,
-            'days_passed': days_passed,
-            'time_of_day': time_of_day,
-            'weather': weather,
-            'german_arrival_day': german_arrival_day,
-            'save_date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'playtime': playtime
-        }
-        
-        try:
-            with open(filename, 'w') as file:
-                json.dump(save_data, file, indent=2)
-            return True
-        except Exception as e:
-            print(f"Failed to save game: {e}")
-            return False
-    
-    def load_game_from_slot(self, slot_number: int) -> Optional[Dict]:
-        """Load game data from specific slot"""
-        if slot_number < 1 or slot_number > self.max_slots:
-            return None
-        
-        filename = self.get_save_filename(slot_number)
-        
-        if not self.is_valid_save_file(filename):
-            return None
-        
-        try:
-            with open(filename, 'r') as file:
-                return json.load(file)
-        except Exception as e:
-            print(f"Failed to load game: {e}")
-            return None
-    
-    def delete_save_slot(self, slot_number: int) -> bool:
-        """Delete a save slot"""
-        if slot_number < 1 or slot_number > self.max_slots:
-            return False
-        
-        filename = self.get_save_filename(slot_number)
-        
-        if os.path.exists(filename):
-            try:
-                os.remove(filename)
-                return True
-            except Exception as e:
-                print(f"Failed to delete save: {e}")
-                return False
-        return True  # File doesn't exist, so "deletion" successful
-
-def handle_save_menu(save_manager: SaveSlotManager, player_name: str, gold: int,
-                    cart: List, completed_quests: List, days_passed: int,
-                    time_of_day: str, weather: str, german_arrival_day: int,
-                    moral_choices: Dict, reputation: Dict, npc_relationships: Dict,
-                    start_time: datetime.datetime = None):
-    while True:
-        save_manager.display_save_slots()
-        
-        try:
-            choice = input("\nSelect slot to save (1-5) or 0 to cancel: ").strip()
-            
-            if choice == '0':
-                break
-            
-            slot_num = int(choice)
-            if slot_num < 1 or slot_num > save_manager.max_slots:
-                print("Invalid slot number!")
-                input("Press Enter to continue...")
-                continue
-            
-            # Check if slot has existing save
-            save_info = save_manager.get_all_save_info()
-            slot_info = next((info for info in save_info if info['slot'] == slot_num), None)
-            
-            if slot_info and slot_info['exists']:
-                confirm = input(f"Slot {slot_num} already contains a save. Overwrite? (y/n): ").lower()
-                if confirm != 'y':
-                    continue
-            
-            if save_manager.save_game_to_slot(slot_num, player_name, gold, cart,
-                                            completed_quests, days_passed, time_of_day,
-                                            weather, german_arrival_day, start_time):
-                print(f"Game saved to slot {slot_num} successfully!")
-                input("Press Enter to continue...")
-                break
-            else:
-                print("Failed to save game!")
-                input("Press Enter to continue...")
-                
-        except ValueError:
-            print("Please enter a valid number!")
-            input("Press Enter to continue...")
-
-def handle_load_menu(save_manager: SaveSlotManager) -> Optional[Dict]:
-    """Handle the load game menu"""
-    while True:
-        save_manager.display_save_slots()
-        
-        try:
-            choice = input("\nSelect slot to load (1-5), 'd' to delete, or 0 to cancel: ").strip().lower()
-            
-            if choice == '0':
-                return None
-            
-            if choice == 'd':
-                delete_slot = input("Which slot to delete (1-5)? ").strip()
-                try:
-                    delete_num = int(delete_slot)
-                    if 1 <= delete_num <= save_manager.max_slots:
-                        confirm = input(f"Really delete slot {delete_num}? (y/n): ").lower()
-                        if confirm == 'y':
-                            if save_manager.delete_save_slot(delete_num):
-                                print(f"Slot {delete_num} deleted!")
-                            else:
-                                print("Failed to delete slot!")
-                    else:
-                        print("Invalid slot number!")
-                except ValueError:
-                    print("Invalid input!")
-                input("Press Enter to continue...")
-                continue
-            
-            slot_num = int(choice)
-            if slot_num < 1 or slot_num > save_manager.max_slots:
-                print("Invalid slot number!")
-                input("Press Enter to continue...")
-                continue
-            
-            save_data = save_manager.load_game_from_slot(slot_num)
-            if save_data:
-                return save_data
-            else:
-                print("No valid save data in this slot!")
-                input("Press Enter to continue...")
-                
-        except ValueError:
-            print("Please enter a valid number!")
-            input("Press Enter to continue...")
-def track_decision(choice_type, reputation_changes, npc_changes=None):
-    # This function needs access to the global variables
-    # For now, just print what would happen
-    print(f"Decision tracked: {choice_type}")
-    print(f"Reputation changes: {reputation_changes}")
-    if npc_changes:
-        print(f"NPC relationship changes: {npc_changes}")
-
-def determine_story_path():
-    # Placeholder - you'll need to pass moral_choices as parameter
-    return "balanced_path"
-
-def calculate_enhanced_battle_power(cart, completed_quests, days_passed):
-    power = calculate_battle_power(cart, completed_quests, days_passed)
-    # Add other bonuses here
-    return power, determine_story_path()
-
-def determine_final_ending(battle_power, story_path):
-    if battle_power >= 15:
-        return "legendary_hero_ending"
-    elif battle_power >= 12:
-        return "heroic_victory_ending" 
-    elif battle_power >= 8:
-        return "close_victory_ending"
-    else:
-        return "tragic_ending"

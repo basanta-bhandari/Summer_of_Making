@@ -101,7 +101,6 @@ class SaveSlotManager:
     def save_game_to_slot(self, slot_number: int, player_name: str, gold: int, 
                          cart: List, completed_quests: List, days_passed: int,
                          time_of_day: str, weather: str, german_arrival_day: int,
-                         moral_choices: Dict, reputation: Dict, npc_relationships: Dict,
                          start_time: datetime.datetime = None) -> bool:
         """Save game data to specific slot"""
         if slot_number < 1 or slot_number > self.max_slots:
@@ -129,10 +128,7 @@ class SaveSlotManager:
             'weather': weather,
             'german_arrival_day': german_arrival_day,
             'save_date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'playtime': playtime,
-            'moral_choices': moral_choices,
-            'reputation': reputation,
-            'npc_relationships': npc_relationships
+            'playtime': playtime
         }
         
         try:
@@ -179,7 +175,6 @@ class SaveSlotManager:
 def handle_save_menu(save_manager: SaveSlotManager, player_name: str, gold: int,
                     cart: List, completed_quests: List, days_passed: int,
                     time_of_day: str, weather: str, german_arrival_day: int,
-                    moral_choices: Dict, reputation: Dict, npc_relationships: Dict,
                     start_time: datetime.datetime = None):
     """Handle the save game menu"""
     while True:
@@ -208,8 +203,7 @@ def handle_save_menu(save_manager: SaveSlotManager, player_name: str, gold: int,
             
             if save_manager.save_game_to_slot(slot_num, player_name, gold, cart,
                                             completed_quests, days_passed, time_of_day,
-                                            weather, german_arrival_day, 
-                                            moral_choices, reputation, npc_relationships, start_time):
+                                            weather, german_arrival_day, start_time):
                 print(f"Game saved to slot {slot_num} successfully!")
                 input("Press Enter to continue...")
                 break

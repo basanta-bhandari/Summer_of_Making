@@ -1,0 +1,15 @@
+{
+  "player_name": "Hero",
+  "gold": 8040,
+  "cart": [
+    "healing potion",
+    "body armor"
+  ],
+  "completed_quests": [],
+  "days_passed": 0,
+  "time_of_day": "night",
+  "weather": "clear",
+  "german_arrival_day": 7,
+  "save_date": "2025-08-22 22:47:12",
+  "playtime": "00:03"
+}

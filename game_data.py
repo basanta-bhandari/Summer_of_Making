@@ -158,15 +158,35 @@ ITEM_DESCRIPTIONS = {
     'wolf': 'A fierce companion for battle',
     'dragon': 'A cool pet ',
 }
-WEIGHTED_QUESTS = {
-    'help_beggar': {
-        'give_gold': {'choice_type': 'heroic', 'reputation': {'villagers': +5, 'church': +3}, 'cost': 20},
-        'ignore': {'choice_type': 'pragmatic', 'reputation': {'nobles': +2}, 'cost': 0},
-        'rob_beggar': {'choice_type': 'ruthless', 'reputation': {'villagers': -10, 'nobles': +5}, 'cost': -10}
-    },
-    'merchant_dispute': {
-        'fair_judgment': {'choice_type': 'heroic', 'reputation': {'villagers': +8}, 'npc': {'village_elder': +10}},
-        'side_with_rich': {'choice_type': 'pragmatic', 'reputation': {'nobles': +10}, 'reward': 50},
-        'extort_both': {'choice_type': 'ruthless', 'reputation': {'villagers': -5, 'nobles': -3}, 'reward': 100}
-    }
+
+# Tiffany's Dialogue Lines
+TIFFANY_DIALOGUE = {
+    'opening': """She doesn't cheer for you. She doesn't swoon. She just gives you a look that clearly says:
+    - Don't get yourself killed, idiot -""",
+    
+    'day_1': "Try not to mess this up. The village has enough problems without you adding to them.",
+    'day_2': "Don't do anything stupid. More than usual, I mean.",
+    'day_3': "Well, now we know it's not just drama. Try not to make it worse.",
+    'day_4': "Idiots with swords. That's what this village is full of.",
+    'day_5': "Choices, choices... try not to die. I'm running out of bandages.",
+    'day_6': "Well, today's the day. Try not to get killed. Or do. I need the practice.",
+    
+    'raid_before': "Try not to get killed. I'm running out of bandages.",
+    'raid_success': "Well, you're not dead. That's something, I suppose.",
+    'raid_failure': "Someone help him! And try not to make it worse!",
+    
+    'death_alternative_potion': "I can't believe I wasted a good potion on you. Try not to do it again.",
+    'death_alternative_mage': "Impressive. Don't make me do this again. My nerves can't take it.",
+    'death_alternative_reaper': "What dark bargains have you made? Just... stay away from me with that thing.",
+    'death_final': "You idiot. You absolute idiot. Why did you have to be so heroic?",
+    
+    'freelancer_battle': "Well done. I might actually have to admit you're competent. Don't let it go to your head.",
+    
+    'ending_legendary': "Well, I suppose you're not completely useless after all. Don't let it go to your head.",
+    'ending_martyr': "You idiot! Why did you have to be so heroic?",
+    'ending_emperor': "Tyrant. But at least you're consistent. I'll patch up your paper cuts.",
+    'ending_champion': "Even you can't mess this up... right? Famous last words.",
+    'ending_warlord': "Well, nobody can say you're not efficient. I'll patch up your... victims.",
+    'ending_survivor': "You're alive. That's... something, I suppose. Try not to bleed on my floor.",
+    'ending_defeat': "I told you this was a bad idea. But does anyone listen to me? No."
 }

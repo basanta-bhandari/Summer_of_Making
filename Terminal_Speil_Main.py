@@ -19,9 +19,6 @@ def main():
     print("Starting Terminal Speil...")
     
     # GLOBAL VARIABLES/DEFINES
-    moral_choices = {"heroic": 0, "pragmatic": 0, "ruthless": 0}
-    reputation = {"villagers": 50, "nobles": 50, "church": 50}
-    npc_relationships = {"elena": 50, "village_elder": 50, "blacksmith": 50, "priest": 50}
     start_time = datetime.datetime.now()
     completed_quests = []
     time_of_day = "morning"
@@ -43,12 +40,10 @@ def main():
     ::: ##:::: ##::::::: ##::. ##:: ##:.:: ##:: ##:: ##:. ###: ##.... ##: ##::::::::::'##::: ##: ##:::::::: ##:::::::: ##:: ##:::::::
     ::: ##:::: ########: ##:::. ##: ##:::: ##:'####: ##::. ##: ##:::: ##: ########::::. ######:: ##:::::::: ########:'####: ########:
     :::..:::::........::..:::::..::..:::::..::....::..::::..::..:::::..::........::::::......:::..:::::::::........::....::........:: """)
-    print("Welcome, brave hero!")
-
+    
     # Check if any save files exist
     save_manager = SaveSlotManager(max_slots=5)   
     save_info = save_manager.get_all_save_info()
-
 
     has_saves = any(info['exists'] for info in save_info)
     if has_saves:
@@ -64,12 +59,8 @@ def main():
                 time_of_day = save_data.get('time_of_day', 'morning')
                 weather = save_data.get('weather', 'clear')
                 german_arrival_day = save_data.get('german_arrival_day', 7)
-                # Update the new variables from save data
-                moral_choices = save_data.get('moral_choices', moral_choices)
-                reputation = save_data.get('reputation', reputation)
-                npc_relationships = save_data.get('npc_relationships', npc_relationships)
                 print(f"Welcome back, Sir {player_name}!")
-                print("No game loaded. Starting new game...")
+    
     if not player_name: 
         # Get start game input
         start_choice = get_valid_input("Shall we begin our adventure? (y/n): ", ['y', 'n'])
@@ -82,6 +73,9 @@ def main():
         if not player_name:
             player_name = "Hero"
 
+    # Show opening intro
+    show_opening_intro(player_name)
+    
     # Show current time
     current_hour = datetime.datetime.now().hour
     current_time = datetime.datetime.now()
@@ -98,21 +92,15 @@ def main():
         else:
             time_of_day = "evening"
 
-    # Show intro
-    print(f"""
-=== Terminal Speil ===
-Sir {player_name}!
-Your village is under attack by a Germanic tribe! 
-You must gather allies, weapons, and supplies to defend your home.
-The fate of your village (and that special someone) depends on you!
-    """)
-
     # Main game loop
     while not game_ended:
+        # Show daily interlude at the start of each day
+        if time_of_day == "morning":
+            show_daily_interlude(days_passed + 1, player_name)
+        
         # Check if Germans have arrived
         if days_passed >= german_arrival_day:
-            print("\nThe Germanic warband has arrived at the village gates!")
-            print("You must face them now or all is lost!")
+            show_final_battle_intro(player_name)
             
             battle_choice = get_valid_input("Face the Germans in battle? (yes/flee): ", ['yes', 'flee'])
             if battle_choice == 'flee':
@@ -138,7 +126,7 @@ The fate of your village (and that special someone) depends on you!
         # Show main menu
         show_main_menu(gold, len(cart), days_passed, german_arrival_day, len(completed_quests))
         
-                # Random events
+        # Random events
         if random.random() < 0.1:
             event = random.choice(RANDOM_EVENTS)
             print(f"\n--- RANDOM EVENT ---")
@@ -146,6 +134,7 @@ The fate of your village (and that special someone) depends on you!
             gold += event['gold']
             print(f"You gained {event['gold']} gold!")
             input("Press Enter to continue...")
+            
         # Get main menu choice
         main_choice = get_valid_input("Choose an option: ", ['i', 's', 'b', 'r', 'save', 'q'])
         
@@ -159,8 +148,7 @@ The fate of your village (and that special someone) depends on you!
             
         elif main_choice == 'save':
             handle_save_menu(save_manager, player_name, gold, cart, completed_quests, 
-                            days_passed, time_of_day, weather, german_arrival_day, 
-                            moral_choices, reputation, npc_relationships, start_time)
+                            days_passed, time_of_day, weather, german_arrival_day, start_time)
 
             
         elif main_choice == 'i':
