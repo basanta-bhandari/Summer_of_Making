@@ -271,7 +271,7 @@ def main():
                     continue
                     
                 energy -= 50  # Raiding costs lots of energy
-                raid_result = handle_german_raid(cart, player_name, weather)
+                raid_result = handle_german_raid(cart, player_name)  # Removed weather parameter
                 if raid_result == 'victory':
                     german_arrival_day += 2
                     nickname_stats['successful_raids'] += 1
@@ -309,13 +309,19 @@ def main():
             battle_items = ['brian', 'black knight', 'grim reaper', 'god', 'mage', 'nordic', 'biccus diccus', 'raddragonore']
             has_ally = any(item in cart for item in battle_items)
             
+            if not has_ally:
+                print("You need a battle companion before you can face the Germans!")
+                print("Visit the Freelancers Guild to recruit an ally.")
+                input("Press Enter to continue...")
+                continue
+                
             if len(completed_quests) < quests_needed_for_battle:
                 print(f"You need to complete at least {quests_needed_for_battle} quests before challenging the Germans!")
                 print(f"Quests completed: {len(completed_quests)}/{quests_needed_for_battle}")
                 input("Press Enter to continue...")
                 continue
             
-            if has_ally and energy >= 50:
+            if energy >= 50:
                 print("You decide to face the Germanic threat head-on!")
                 game_ended = handle_final_battle(cart, player_name, completed_quests, days_passed)
             else:
